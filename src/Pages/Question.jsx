@@ -62,8 +62,6 @@ const Question = () => {
       });
   }, []);
 
-  console.log(questionData);
-
   const [query, setQuery] = useState('');
   const handlequery = (e) => {
     setQuery(e.target.value);
@@ -135,6 +133,7 @@ const Question = () => {
             className={styles.selectingLevel}
             onChange={handleLevelChange}
             value={selectedLevel}
+            disabled={!Array.isArray(currentQuest) || currentQuest.length === 0}
           >
             {levelOptions.map((option, index) => (
               <option key={index} value={option}>
@@ -152,7 +151,11 @@ const Question = () => {
               }
             }}
           />
-          <button className={styles.searchingBtn} onClick={handleSearch}>
+          <button
+            className={styles.searchingBtn}
+            onClick={handleSearch}
+            disabled={!Array.isArray(currentQuest) || currentQuest.length === 0}
+          >
             검색
           </button>
         </div>
@@ -163,7 +166,9 @@ const Question = () => {
         <QuestionPageBtn
           handlePageChange={handlePageChange}
           currentPage={currentPage}
-          canGoToNextPage={canGoToNextPage}
+          canGoToNextPage={
+            Array.isArray(currentQuest) && currentQuest.length > 0
+          }
         />
       </div>
     </div>
