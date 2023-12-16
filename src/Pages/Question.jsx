@@ -62,6 +62,8 @@ const Question = () => {
       });
   }, []);
 
+  console.log(questionData);
+
   const [query, setQuery] = useState('');
   const handlequery = (e) => {
     setQuery(e.target.value);
