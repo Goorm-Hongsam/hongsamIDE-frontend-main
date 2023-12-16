@@ -13,18 +13,24 @@ const QuestionContainer = ({ currentQuest, goToEditor }) => {
           </tr>
         </thead>
         <tbody className={styles.tbody}>
-          {currentQuest.map((question, index) => (
-            <tr key={index}>
-              <td>{question.id}</td>
-              <td>{`Lv.${question.level}`}</td>
-              <td
-                className={styles.selectingQuestion}
-                onClick={() => goToEditor(question.id)}
-              >
-                {question.title}
-              </td>
+          {currentQuest.length > 0 ? (
+            currentQuest.map((question, index) => (
+              <tr key={index}>
+                <td>{question.id}</td>
+                <td>{`Lv.${question.level}`}</td>
+                <td
+                  className={styles.selectingQuestion}
+                  onClick={() => goToEditor(question.id)}
+                >
+                  {question.title}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="3">준비중</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
