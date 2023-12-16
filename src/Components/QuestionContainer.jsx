@@ -13,7 +13,7 @@ const QuestionContainer = ({ currentQuest, goToEditor }) => {
           </tr>
         </thead>
         <tbody className={styles.tbody}>
-          {currentQuest.length > 0 ? (
+          {Array.isArray(currentQuest) && currentQuest.length > 0 ? (
             currentQuest.map((question, index) => (
               <tr key={index}>
                 <td>{question.id}</td>
