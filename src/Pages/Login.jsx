@@ -1,14 +1,22 @@
 import React from 'react';
-import styled from 'styled-components';
+import styles from './Login.module.css';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../api/AuthContext';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+
+import instance from '../api/CustomAxios';
 
 const Login = () => {
+  const axiosInstance = instance();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  /* 로그인 & 유저 정보 전역관리 */
+  const { login } = useAuth();
 
   /* 로그인 성공 시 라우팅 내비게이터 */
   const navigate = useNavigate();
@@ -20,16 +28,15 @@ const Login = () => {
       password,
     };
 
-    axios
-      .post('https://api.hong-sam.online/members/login', Data, {
+    axiosInstance
+      .post(`members/login`, Data, {
         withCredentials: true,
       })
       .then((response) => {
-        /* 로그인 완료 */
         if (response.data.status === 200) {
-          //login(response.data.data);
+          login(response.data.data);
           navigate('/question');
-        } /* 로그인 실패 */ else if (response.data.status === 400) {
+        } else if (response.data.status === 400) {
           alert('아이디 또는 비밀번호가 맞지 않습니다.');
         }
       })
@@ -39,12 +46,12 @@ const Login = () => {
   };
 
   return (
-    <LoginContainer>
-      <Subtitle>Step for Developer</Subtitle>
-      <Title>Hongsam IDE</Title>
-      <LoginForm onSubmit={handleSubmit(onLogin)}>
-        <Label>ID</Label>
-        <Input
+    <div className={styles.Login}>
+      <div className={styles.subtitle}>Step for Developer</div>
+      <div className={styles.title}>Hongsam IDE</div>
+      <form className={styles.form} onSubmit={handleSubmit(onLogin)}>
+        <label>ID</label>
+        <input
           name="email"
           type="email"
           autoComplete="off"
@@ -54,10 +61,10 @@ const Login = () => {
           })}
         />
         {errors.email && errors.email.type === 'required' && (
-          <ErrorMessage>이 칸을 입력해주세요.</ErrorMessage>
+          <p>이 칸을 입력해주세요.</p>
         )}
-        <Label>Password</Label>
-        <Input
+        <label>Password</label>
+        <input
           name="password"
           type="password"
           autoComplete="off"
@@ -67,107 +74,15 @@ const Login = () => {
           })}
         />
         {errors.password && errors.password.type === 'required' && (
-          <ErrorMessage>이 칸을 입력해주세요.</ErrorMessage>
+          <p>이 칸을 입력해주세요.</p>
         )}
-        <StyledLink to={'/signup'}>Sign up</StyledLink>
-        <LoginButton type="submit">Login</LoginButton>
-      </LoginForm>
-    </LoginContainer>
+        <Link to={'/signup'}>Sign up</Link>
+        <button className={styles.loginBtn} type="submit">
+          Login
+        </button>
+      </form>
+    </div>
   );
 };
-
-const LoginContainer = styled.div`
-  display: flex;
-  margin: 10px;
-  flex-direction: column;
-  justify-content: center;
-  height: 90vh;
-  align-items: center;
-`;
-
-const Subtitle = styled.div`
-  display: inline;
-  margin: 0 auto;
-  font-size: 20px;
-  margin-bottom: 10px;
-`;
-
-const Title = styled.div`
-  display: inline;
-  margin: 0 auto;
-  color: var(--main-color);
-  font-size: 42px;
-  letter-spacing: 0.2cm;
-`;
-
-const LoginForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-  padding-top: 30px;
-`;
-
-const Input = styled.input`
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
-  border-radius: 4px;
-  border: none;
-  background-color: var(--lightGray-color);
-  padding: 15px 15px;
-  margin-bottom: 5px;
-  font-size: 14px;
-  font-family: 'NeoDunggeunmoPro-Regular';
-`;
-
-const Label = styled.label`
-  line-height: 2;
-  text-align: left;
-  display: block;
-  margin-bottom: 5px;
-  margin-top: 10px;
-  color: var(--main-color);
-  font-size: 16px;
-  font-weight: 300;
-`;
-
-const LoginButton = styled.button`
-  margin: 10px auto;
-  width: 100%;
-  border: none;
-  border-radius: 5px;
-  padding: 15px;
-  color: white;
-  background-color: var(--main-color);
-  font-family: 'NeoDunggeunmoPro-Regular';
-  font-size: 16px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--hover-color);
-  }
-`;
-
-const StyledLink = styled(Link)`
-  display: block;
-  width: 100%;
-  text-align: right;
-  text-decoration: none;
-  color: var(--main-color);
-  padding-top: 10px;
-  font-size: 14px;
-`;
-
-const ErrorMessage = styled.p`
-  font-size: 14px;
-  padding: 10px 0px;
-  color: var(--alert-color);
-
-  &::before {
-    content: '⚠️ ';
-  }
-`;
 
 export default Login;

@@ -1,0 +1,74 @@
+.Mypage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+}
+
+.userInfoContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  height: 80vh;
+
+  border-radius: 5px;
+  position: relative;
+  gap: 40px;
+}
+
+.userPhotoContainer {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+}
+
+.userInfo,
+.userScore,
+.userBtns {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.Title {
+  font-size: 18px;
+  margin-bottom: 5px;
+  color: var(--main-color);
+}
+
+.userBtns .modifyBtn {
+  width: 80%;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--main-color);
+  color: white;
+  font-size: 14px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.userBtns .modifyBtn:hover {
+  background-color: var(--mainDark-color);
+}
+
+.userBtns .quitBtn {
+  width: 80%;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  background-color: rgb(247, 50, 50);
+  color: white;
+  font-size: 14px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.userBtns .quitBtn:hover {
+  background-color: var(--alert-color);
+}
