@@ -53,7 +53,7 @@ const Question = () => {
 
   useEffect(() => {
     axiosInstance
-      .get(`question`)
+      .get(`/question`)
       .then((response) => {
         setQuestionData(response.data);
       })
