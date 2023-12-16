@@ -1,9 +1,11 @@
-import React, { useState, useRef } from 'react';
-import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styles from './Signup.module.css';
+import instance from '../api/CustomAxios';
 
 const Signup = () => {
+  const axiosInstance = instance();
   const {
     register,
     handleSubmit,
@@ -24,8 +26,8 @@ const Signup = () => {
 
     if (email) {
       try {
-        const response = await axios.post(
-          'https://api.hong-sam.online/members/signup/email-check',
+        const response = await axiosInstance.post(
+          `members/signup/email-check`,
           { email }
         );
 
@@ -53,8 +55,8 @@ const Signup = () => {
         username,
       };
 
-      axios
-        .post('https://api.hong-sam.online/members/signup', Data)
+      axiosInstance
+        .post(`members/signup`, Data)
         .then((response) => {
           /* 회원가입 완료 */
           if (response.data.status === 200) {
@@ -74,14 +76,15 @@ const Signup = () => {
   /* 비밀번호 일치를 위한 useRef */
   const passwordInputRef = useRef(null);
   passwordInputRef.current = watch('password');
+
   return (
-    <SignupContainer>
-      <Subtitle>Step for Developer</Subtitle>
-      <Title>Hongsam IDE</Title>
-      <SignupForm onSubmit={handleSubmit(onSignup)}>
-        <Label>ID</Label>
-        <IdContainer>
-          <Input
+    <div className={styles.Signup}>
+      <div className={styles.subtitle}>Step for Developer</div>
+      <div className={styles.title}>Hongsam IDE</div>
+      <form className={styles.form} onSubmit={handleSubmit(onSignup)}>
+        <label>ID</label>
+        <div className={styles.id}>
+          <input
             name="email"
             type="text"
             autoComplete="off"
@@ -91,19 +94,23 @@ const Signup = () => {
               pattern: /^\S+@\S+$/i,
             })}
           />
-          <ConfirmButton onClick={confirmID} type="button">
+          <button
+            className={styles.confirmIdBtn}
+            onClick={confirmID}
+            type="button"
+          >
             중복 확인
-          </ConfirmButton>
-        </IdContainer>
+          </button>
+        </div>
         {errors.email && errors.email.type === 'required' && (
-          <ErrorMessage>이 칸을 입력해주세요.</ErrorMessage>
+          <p>이 칸을 입력해주세요.</p>
         )}
         {errors.email && errors.email.type === 'pattern' && (
-          <ErrorMessage>아이디 형식이 올바르지 않습니다.</ErrorMessage>
+          <p>아이디 형식이 올바르지 않습니다.</p>
         )}
 
-        <Label>Password</Label>
-        <Input
+        <label>Password</label>
+        <input
           name="password"
           type="password"
           autoComplete="off"
@@ -115,14 +122,14 @@ const Signup = () => {
           })}
         />
         {errors.password && errors.password.type === 'required' && (
-          <ErrorMessage>이 칸을 입력해주세요.</ErrorMessage>
+          <p>이 칸을 입력해주세요.</p>
         )}
         {errors.password && errors.password.type === 'pattern' && (
-          <ErrorMessage>비밀번호 형식이 올바르지 않습니다.</ErrorMessage>
+          <p>비밀번호 형식이 올바르지 않습니다.</p>
         )}
 
-        <Label>Confirm Password</Label>
-        <Input
+        <label>Confirm Password</label>
+        <input
           name="confirm"
           type="password"
           autoComplete="off"
@@ -133,14 +140,14 @@ const Signup = () => {
           })}
         />
         {errors.confirm && errors.confirm.type === 'required' && (
-          <ErrorMessage>이 칸을 입력해주세요.</ErrorMessage>
+          <p>이 칸을 입력해주세요.</p>
         )}
         {errors.confirm && errors.confirm.type === 'validate' && (
-          <ErrorMessage>비밀번호가 일치하지 않습니다.</ErrorMessage>
+          <p>비밀번호가 일치하지 않습니다.</p>
         )}
 
-        <Label>Name</Label>
-        <Input
+        <label>Name</label>
+        <input
           name="username"
           autoComplete="off"
           placeholder="이름을 10자 이내로 입력해주세요."
@@ -150,117 +157,18 @@ const Signup = () => {
           })}
         />
         {errors.username && errors.username.type === 'required' && (
-          <ErrorMessage>이 칸을 입력해주세요.</ErrorMessage>
+          <p>이 칸을 입력해주세요.</p>
         )}
         {errors.username && errors.username.type === 'maxLength' && (
-          <ErrorMessage>10자 이내로 입력해주세요.</ErrorMessage>
+          <p>10자 이내로 입력해주세요.</p>
         )}
 
-        <SignupButton type="submit">Sign up</SignupButton>
-      </SignupForm>
-    </SignupContainer>
+        <button className={styles.submitBtn} type="submit">
+          Sign up
+        </button>
+      </form>
+    </div>
   );
 };
-
-const SignupContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  max-height: max-content;
-`;
-
-const Subtitle = styled.div`
-  display: inline;
-  margin: 0 auto;
-  font-size: 20px;
-  margin-bottom: 10px;
-`;
-
-const Title = styled.div`
-  display: inline;
-  margin: 0 auto;
-  color: var(--main-color);
-  font-size: 42px;
-  letter-spacing: 0.2cm;
-`;
-
-const SignupForm = styled.form`
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-`;
-
-const IdContainer = styled.div`
-  display: flex;
-  gap: 10px;
-`;
-
-const ConfirmButton = styled.button`
-  box-sizing: border-box;
-  width: 90px;
-  border: none;
-  border-radius: 5px;
-  margin-bottom: 5px;
-  background-color: var(--main-color);
-  color: white;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--hover-color);
-  }
-`;
-
-const Input = styled.input`
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
-  border-radius: 4px;
-  border: none;
-  background-color: var(--lightGray-color);
-  padding: 15px 15px;
-  margin-bottom: 5px;
-  font-size: 14px;
-  font-family: 'NeoDunggeunmoPro-Regular';
-`;
-
-const Label = styled.label`
-  line-height: 2;
-  text-align: left;
-  display: block;
-  margin-bottom: 5px;
-  margin-top: 10px;
-  color: var(--main-color);
-  font-size: 16px;
-  font-weight: 300;
-`;
-
-const SignupButton = styled.button`
-  margin: 10px auto;
-  width: 100%;
-  border: none;
-  border-radius: 5px;
-  padding: 15px;
-  color: white;
-  background-color: var(--main-color);
-  font-family: 'NeoDunggeunmoPro-Regular';
-  font-size: 16px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: var(--hover-color);
-  }
-`;
-
-const ErrorMessage = styled.p`
-  font-size: 14px;
-  padding: 10px 0px;
-  color: var(--alert-color);
-
-  &::before {
-    content: '⚠️ ';
-  }
-`;
 
 export default Signup;

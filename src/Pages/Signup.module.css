@@ -1,0 +1,108 @@
+@import '../reset.css';
+
+.Signup {
+  display: flex;
+  margin: 10px;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  align-items: center;
+}
+
+.subtitle {
+  display: inline;
+  margin: 0 auto;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.subtitle .dark-mode {
+  color: white;
+}
+
+.title {
+  display: inline;
+  margin: 0 auto;
+  color: var(--main-color);
+  font-size: 42px;
+  letter-spacing: 0.2cm;
+}
+
+.form {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding-top: 30px;
+}
+
+.Signup input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+  border: none;
+  background-color: var(--lightGray-color);
+  padding: 15px 15px;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.Signup label {
+  line-height: 2;
+  text-align: left;
+  display: block;
+  margin: 10px 0 5px;
+  color: var(--main-color);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+input[type='text'] {
+  width: 300px;
+}
+
+.id {
+  display: flex;
+  gap: 10px;
+}
+
+.confirmIdBtn {
+  box-sizing: border-box;
+  width: 90px;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  background-color: var(--main-color);
+  color: white;
+  cursor: pointer;
+}
+
+.confirmIdBtn:hover {
+  background-color: var(--mainDark-color);
+}
+
+.submitBtn {
+  margin: 20px auto;
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  padding: 15px;
+  color: white;
+  background-color: var(--main-color);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.submitBtn:hover {
+  background-color: var(--mainDark-color);
+}
+
+p {
+  font-size: 14px;
+  padding: 10px 0px;
+  color: var(--alert-color);
+}
+
+p::before {
+  content: '⚠️ ';
+}

@@ -1,0 +1,105 @@
+.Question {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+}
+
+.findingQuestion {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  padding-top: 100px;
+}
+
+.findingQuestion input {
+  display: block;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: none;
+  background-color: var(--lightGray-color);
+  padding: 15px 15px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-family: 'NeoDunggeunmoPro-Regular';
+  width: 440px;
+  height: 40px;
+}
+
+.searchingBtn {
+  border: none;
+  width: 50px;
+  border-radius: 5px;
+  background-color: var(--main-color);
+  color: white;
+  cursor: pointer;
+  height: 40px;
+}
+
+.selectingLevel {
+  width: 80px;
+  height: 40px;
+  padding-left: 10px;
+  border-radius: 5px;
+  border: 1px solid var(--lightGray-color);
+}
+
+.tableContainer {
+  display: flex;
+  justify-content: center;
+  padding-top: 30px;
+}
+
+.table th {
+  background-color: var(--main-color);
+  font-weight: bold;
+  padding: 8px;
+  text-align: left;
+  border: 1px solid var(--lightGray-color);
+  width: 100px;
+  color: white;
+}
+
+.table th:last-child {
+  width: 350px;
+}
+
+.table td {
+  padding: 10px;
+  font-size: 16px;
+  text-align: left;
+  border: 1px solid var(--lightGray-color);
+}
+
+.selectingQuestion {
+  cursor: pointer;
+}
+
+.selectingQuestion:hover {
+  color: var(--main-color);
+}
+
+.pageBtns {
+  display: flex;
+  gap: 5px;
+  padding-top: 20px;
+}
+
+.pageBtns button {
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 25px;
+  background-color: var(--main-color);
+  color: white;
+}
+
+.Question button:hover {
+  background-color: var(--mainDark-color);
+}
+
+.Question button:disabled {
+  background-color: var(--darkGray-color);
+  cursor: unset;
+}

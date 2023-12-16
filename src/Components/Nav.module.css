@@ -1,0 +1,62 @@
+.header {
+  height: 50px;
+  width: 100%;
+  border-bottom: 1px solid var(--main-color);
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  align-items: center;
+  font-size: 24px;
+  color: var(--main-color);
+  padding: 20px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.username {
+  padding: 20px;
+  position: relative;
+  box-sizing: border-box;
+  border: none;
+  background-color: transparent;
+  color: var(--main-color);
+  cursor: pointer;
+}
+
+.userPhoto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.userPhoto img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.dropdown {
+  position: absolute;
+  background-color: white;
+  width: 100px;
+  top: 80%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.dropdown li {
+  padding: 10px;
+  font-size: 12px;
+  border: 1px solid var(--lightGray-color);
+  color: black;
+  transition: background-color 0.3s;
+}
+
+.dropdown li:hover {
+  background-color: var(--main-color);
+  color: black;
+}
