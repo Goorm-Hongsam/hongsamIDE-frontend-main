@@ -108,7 +108,7 @@ const Question = () => {
     setCurrentPage(newPageNumber);
 
     const offset = direction === 'next' ? indexOfLastQuest : indexOfFirstQuest;
-    fetchData(direction, selectedLevel, offset, 5);
+    fetchData(direction, selectedLevel, offset / 2, 5);
   };
 
   return (
@@ -151,7 +151,6 @@ const Question = () => {
               console.log('Prev Button Clicked');
               handlePageChange('prev');
             }}
-            disabled={currentPage === 1}
           >
             ◀️
           </button>
@@ -160,7 +159,6 @@ const Question = () => {
               console.log('Next Button Clicked');
               handlePageChange('next');
             }}
-            disabled={!canGoToNextPage}
           >
             ▶️
           </button>
