@@ -80,31 +80,52 @@ const Question = () => {
 
   useEffect(() => {
     const firstData = async () => {
+      // 초기 데이터를 설정하기 전에 pageIdx와 pageSize를 정의합니다.
       const newLevel =
         selectedLevel === 'all' ? -1 : parseInt(selectedLevel.slice(3));
+      const firstPageIdx = 1;
+      const firstPageSize = 5;
 
       try {
         const response = await axiosInstance.get(
-          `/question?button=next&level=${newLevel}&index=${pageIdx}&size=${pageSize}`
+          `/question?button=next&level=${newLevel}&index=${firstPageIdx}&size=${firstPageSize}`
         );
 
         if (response.data.status === 200) {
           setQuestionData(response.data);
+          // 초기 데이터를 설정할 때에도 pageIdx와 pageSize를 사용합니다.
+          setPageIdx(firstPageIdx);
         }
       } catch (error) {
         console.error(error);
       }
     };
-    firstData();
-  }, []);
 
-  const fetchData = async (direction) => {
+    firstData();
+  }, [selectedLevel]); // selectedLevel이 변경될 때마다 실행합니다.
+
+  const [pageIdx, setPageIdx] = useState(1);
+  const pageSize = 5;
+
+  const handlePageChange = (direction) => {
+    if (direction === 'previous' && pageIdx > 1) {
+      const newPageIdx = pageIdx - 5;
+      setPageIdx(newPageIdx);
+      fetchData(direction, newPageIdx);
+    } else if (direction === 'next') {
+      const newPageIdx = pageIdx + 5;
+      setPageIdx(newPageIdx);
+      fetchData(direction, newPageIdx);
+    }
+  };
+
+  const fetchData = async (direction, idx) => {
     const newLevel =
       selectedLevel === 'all' ? -1 : parseInt(selectedLevel.slice(3));
 
     try {
       const response = await axiosInstance.get(
-        `/question?button=${direction}&level=${newLevel}&index=${pageIdx}&size=${pageSize}`
+        `/question?button=${direction}&level=${newLevel}&index=${idx}&size=${pageSize}`
       );
 
       if (response.data.status === 200) {
@@ -112,19 +133,6 @@ const Question = () => {
       }
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  const [pageIdx, setPageIdx] = useState(1);
-  const pageSize = 5;
-
-  const handlePageChange = (direction) => {
-    if (direction === 'previous' && pageIdx > 1) {
-      setPageIdx(pageIdx - 5);
-      fetchData(direction);
-    } else if (direction === 'next') {
-      setPageIdx(pageIdx + 5);
-      fetchData(direction);
     }
   };
 
