@@ -2,16 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Question.module.css';
 import Nav from '../Components/Nav';
+
 import { useAuth } from '../api/AuthContext';
 import QuestionContainer from '../Components/QuestionContainer';
+
 import instance from '../api/CustomAxios';
 
 const Question = () => {
   const axiosInstance = instance();
   const navigate = useNavigate();
+
   const { isLoggedIn, userData } = useAuth();
 
+  /* IDE로 이동하는 함수 */
   const goToEditor = (questionId) => {
+    /* 로그인 시 uuid와 questionId를 가지고 이동 */
     if (isLoggedIn) {
       axiosInstance
         .get(`/question/${questionId}`, {
@@ -26,55 +31,52 @@ const Question = () => {
         .catch((error) => {
           console.log(error);
         });
+      /* 미로그인 시 로그인 페이지로 이동 */
     } else {
       alert('로그인을 해주세요.');
       navigate('/login');
     }
   };
 
+  /* 레벨 선택 상태 */
   const [selectedLevel, setSelectedLevel] = useState('all');
+
+  /* 레벨 선택 이벤트 핸들러 */
   const handleLevelChange = (event) => {
     setSelectedLevel(event.target.value);
-    fetchData('next', event.target.value, 1, 5);
   };
 
+  /* 레벨 선택 옵션 */
   const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
   const [questionData, setQuestionData] = useState([]);
 
-  const fetchData = async (button, level, index, size) => {
-    try {
-      const response = await axiosInstance.get('/question', {
-        params: {
-          button,
-          level: level === 'all' ? -1 : parseInt(level.slice(3)),
-          index,
-          size,
-        },
-      });
-
-      setQuestionData(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    fetchData('next', 'all', 1, 5);
+    axiosInstance
+      .get(`question`)
+      .then((response) => {
+        setQuestionData(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   const [query, setQuery] = useState('');
-  const handleQuery = (e) => {
+  const handlequery = (e) => {
     setQuery(e.target.value);
   };
 
   const [search, setSearch] = useState(false);
+
   const handleSearch = () => {
     setSearch(true);
   };
 
+  // 레벨 및 검색어를 고려한 필터링 함수
   const filterQuestions = () => {
     let filtered = questionData;
 
+    // 레벨 필터링
     if (selectedLevel !== 'all') {
       filtered = filtered.filter(
         (question) =>
@@ -82,34 +84,73 @@ const Question = () => {
       );
     }
 
+    // 검색어 필터링
     if (query.trim() !== '' && search) {
       filtered = filtered.filter((question) => question.title.includes(query));
     }
     return filtered;
   };
 
+  // 현재 필터된 문제 목록
   const filteredQuests = filterQuestions();
 
-  const questsPerPage = 10;
+  /* 페이지 당 문제 개수 */
+  const questsPerPage = 5;
+
+  /* 현재 페이지의 기본값 */
   const [currentPage, setCurrentPage] = useState(1);
+
+  /* 페이지의 마지막 문제 인덱스 */
   const indexOfLastQuest = currentPage * questsPerPage;
+
+  /* 페이지의 첫 번째 문제 인덱스 */
   const indexOfFirstQuest = indexOfLastQuest - questsPerPage;
+
+  /* 한 페이지 당 들어갈 문제의 개수 */
   const currentQuest = filteredQuests.slice(
     indexOfFirstQuest,
     indexOfLastQuest
   );
 
-  const totalQuests = questionData.length;
-  const canGoToNextPage = indexOfLastQuest < filteredQuests.length;
+  /* 현재 페이지 상태 변경 */
+  // 페이지 상태 변경 및 API 요청
+  const handlePageChange = async (button) => {
+    let newPageIndex;
 
-  const handlePageChange = (direction) => {
-    const newPageNumber =
-      direction === 'next' ? currentPage + 1 : currentPage - 1;
-    setCurrentPage(newPageNumber);
+    if (button === 'next') {
+      newPageIndex = indexOfLastQuest + 1;
+    } else if (button === 'prev' && indexOfFirstQuest > 1) {
+      newPageIndex = indexOfFirstQuest - 1;
+    } else {
+      return; // Do nothing for invalid button or when prev button on the first page
+    }
 
-    const offset = direction === 'next' ? indexOfLastQuest : indexOfFirstQuest;
-    fetchData(direction, selectedLevel, offset / 2, 5);
+    const newLevel =
+      selectedLevel === 'all' ? -1 : parseInt(selectedLevel.slice(3));
+
+    try {
+      const response = await axiosInstance.post('/question', {
+        button,
+        level: newLevel,
+        index: newPageIndex - 1,
+        size: 5,
+      });
+
+      if (response.data.status === 200) {
+        setQuestionData(response.data.data);
+        setCurrentPage(newPageIndex / questsPerPage + 1);
+      }
+    } catch (error) {
+      console.error(error);
+      // 에러 발생 시 적절한 처리를 수행할 수 있습니다.
+    }
   };
+
+  /* 페이지의 마지막 문제 인덱스가 전체 문제 개수보다 작을 경우 다음 페이지로 이동 가능 */
+  const totalQuests = questionData.length;
+  // 페이지의 마지막 문제 인덱스가 전체 문제 개수와 같거나 작을 경우 다음 페이지로 이동 불가능
+  const canGoToNextPage =
+    indexOfLastQuest < totalQuests && indexOfLastQuest < filteredQuests.length;
 
   return (
     <div>
@@ -130,7 +171,7 @@ const Question = () => {
           <input
             className={styles.searchingTitle}
             placeholder="풀고 싶은 문제 제목을 검색하세요."
-            onChange={handleQuery}
+            onChange={handlequery}
             onKeyUp={(e) => {
               if (e.key === 'Enter') {
                 handleSearch();
