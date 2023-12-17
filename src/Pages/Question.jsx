@@ -93,7 +93,6 @@ const Question = () => {
 
         if (response.data.status === 200) {
           setQuestionData(response.data);
-          // 초기 데이터를 설정할 때에도 pageIdx와 pageSize를 사용합니다.
           setPageIdx(firstPageIdx);
         }
       } catch (error) {
@@ -107,16 +106,16 @@ const Question = () => {
   const [pageIdx, setPageIdx] = useState(1);
   const pageSize = 5;
 
-  const handlePageChange = (direction) => {
-    if (direction === 'previous' && pageIdx > 1) {
-      const newPageIdx = pageIdx - 5;
-      setPageIdx(newPageIdx);
-      fetchData(direction, newPageIdx);
+  const handlePageChange = async (direction) => {
+    let newPageIdx;
+    if (direction === 'previous') {
+      newPageIdx = pageIdx - 5;
     } else if (direction === 'next') {
-      const newPageIdx = pageIdx + 5;
-      setPageIdx(newPageIdx);
-      fetchData(direction, newPageIdx);
+      newPageIdx = pageIdx + 5;
     }
+
+    setPageIdx(newPageIdx);
+    await fetchData(direction, newPageIdx);
   };
 
   const fetchData = async (direction, idx) => {
