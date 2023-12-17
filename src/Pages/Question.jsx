@@ -137,7 +137,9 @@ const Question = () => {
   const totalQuests = questionData.length;
   // 페이지의 마지막 문제 인덱스가 전체 문제 개수와 같거나 작을 경우 다음 페이지로 이동 불가능
   const canGoToNextPage =
-    indexOfLastQuest < totalQuests && indexOfLastQuest < filteredQuests.length;
+    indexOfLastQuest < totalQuests &&
+    indexOfLastQuest < filteredQuests.length &&
+    filteredQuests.length > questsPerPage;
 
   return (
     <div>
