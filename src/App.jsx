@@ -24,11 +24,17 @@ function App() {
 
   // body의 배경색을 설정
   useEffect(() => {
+    // 기존의 별 삭제
+    const existingStars = document.querySelectorAll('.star');
+    existingStars.forEach((star) => {
+      document.body.removeChild(star);
+    });
+
     if (isDarkMode) {
       document.body.style.backgroundColor = 'black';
       document.body.style.color = 'white';
 
-      for (let i = 0; i < 150; i++) {
+      for (let i = 0; i < 100; i++) {
         const star = document.createElement('div');
         star.className = 'star';
         star.style.left = `${Math.random() * 100}vw`;
@@ -38,7 +44,7 @@ function App() {
       }
     } else {
       document.body.style.backgroundColor = 'white';
-      document.body.style.color = '#black';
+      document.body.style.color = 'black';
     }
   }, [isDarkMode]); // isDarkMode가 변경될 때만 실행
 
