@@ -2,17 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Question.module.css';
 import Nav from '../Components/Nav';
-
 import { useAuth } from '../api/AuthContext';
 import QuestionContainer from '../Components/QuestionContainer';
 import QuestionPageBtn from '../Components/QuestionPageBtn';
-
 import instance from '../api/CustomAxios';
 
 const Question = () => {
   const axiosInstance = instance();
   const navigate = useNavigate();
-
   const { isLoggedIn, userData } = useAuth();
 
   /* IDE로 이동하는 함수 */
@@ -52,7 +49,7 @@ const Question = () => {
   const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
   const [questionData, setQuestionData] = useState([]);
 
-  // fetchData 함수 수정
+  /* fetchData 함수 수정 */
   const fetchData = async (button, level, index, size) => {
     try {
       const response = await axiosInstance.get('/question', {
@@ -64,16 +61,15 @@ const Question = () => {
         },
       });
 
-      // 새로운 페이지 데이터만 추가
-      setQuestionData((prevData) => [...prevData, ...response.data]);
+      // 새로운 페이지 데이터로 교체
+      setQuestionData(response.data);
     } catch (error) {
       console.error(error);
     }
   };
 
-  // useEffect에서 초기 데이터 요청 시 전체 데이터를 업데이트하지 않도록 수정
   useEffect(() => {
-    fetchData('next', 'all', 1, 5);
+    fetchData('next', 'all', 1, 5); // 초기 데이터 요청은 무조건 5개로 수정
   }, []);
 
   const [query, setQuery] = useState('');
@@ -131,17 +127,11 @@ const Question = () => {
   const handlePageChange = (direction) => {
     const newPageNumber =
       direction === 'next' ? currentPage + 1 : currentPage - 1;
-
-    // 버튼을 누를 때, 새로운 페이지만 로드하도록 수정
-    if (direction === 'next') {
-      const offset = indexOfLastQuest + 1;
-      fetchData(direction, selectedLevel, offset, 5);
-    } else if (direction === 'prev' && newPageNumber > 0) {
-      const offset = indexOfFirstQuest - 5;
-      fetchData(direction, selectedLevel, offset, 5);
-    }
-
     setCurrentPage(newPageNumber);
+
+    const offset =
+      direction === 'next' ? indexOfLastQuest + 1 : indexOfFirstQuest - 5;
+    fetchData(direction, selectedLevel, offset, 5);
   };
 
   /* 페이지의 마지막 문제 인덱스가 전체 문제 개수보다 작을 경우 다음 페이지로 이동 가능 */
@@ -149,9 +139,6 @@ const Question = () => {
   // 페이지의 마지막 문제 인덱스가 전체 문제 개수와 같거나 작을 경우 다음 페이지로 이동 불가능
   const canGoToNextPage =
     indexOfLastQuest < totalQuests && indexOfLastQuest < filteredQuests.length;
-
-  // 페이지의 첫 번째 문제 인덱스가 0보다 클 경우 이전 페이지로 이동 가능
-  const canGoToPrevPage = indexOfFirstQuest > 0;
 
   return (
     <div>
@@ -191,7 +178,6 @@ const Question = () => {
           handlePageChange={handlePageChange}
           currentPage={currentPage}
           canGoToNextPage={canGoToNextPage}
-          canGoToPrevPage={canGoToPrevPage}
         />
       </div>
     </div>
