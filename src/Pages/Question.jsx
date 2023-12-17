@@ -54,6 +54,7 @@ const Question = () => {
   const [idx, setIdx] = useState(1);
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
+  const [start, setStart] = useState(0);
 
   useEffect(() => {
     axiosInstance
@@ -67,17 +68,15 @@ const Question = () => {
   }, [currentPage, idx]);
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setStart((prevStart) => prevStart + itemsPerPage);
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
+    setStart((prevStart) => prevStart + itemsPerPage);
+    setIdx((prevIdx) => prevIdx + itemsPerPage);
+    setCurrentPage((prevPage) => prevPage + 1);
   };
 
   const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setStart((prevStart) => prevStart - itemsPerPage);
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
+    setStart((prevStart) => prevStart - itemsPerPage);
+    setIdx((prevIdx) => prevIdx - itemsPerPage);
+    setCurrentPage((prevPage) => prevPage - 1);
   };
 
   const [query, setQuery] = useState('');
