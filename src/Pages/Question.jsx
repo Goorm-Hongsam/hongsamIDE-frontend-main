@@ -4,7 +4,6 @@ import styles from './Question.module.css';
 import Nav from '../Components/Nav';
 import { useAuth } from '../api/AuthContext';
 import QuestionContainer from '../Components/QuestionContainer';
-import QuestionPageBtn from '../Components/QuestionPageBtn';
 import instance from '../api/CustomAxios';
 
 const Question = () => {
@@ -101,12 +100,7 @@ const Question = () => {
   );
 
   const totalQuests = questionData.length;
-  const canGoToNextPage =
-    indexOfLastQuest < totalQuests &&
-    indexOfLastQuest < filteredQuests.length &&
-    filteredQuests.length > questsPerPage;
-
-  console.log(canGoToNextPage);
+  const canGoToNextPage = indexOfLastQuest < filteredQuests.length;
 
   const handlePageChange = (direction) => {
     const newPageNumber =
@@ -151,11 +145,26 @@ const Question = () => {
           currentQuest={currentQuest}
           goToEditor={goToEditor}
         />
-        <QuestionPageBtn
-          handlePageChange={handlePageChange}
-          currentPage={currentPage}
-          canGoToNextPage={canGoToNextPage}
-        />
+        <div className={styles.pageBtns}>
+          <button
+            onClick={() => {
+              console.log('Prev Button Clicked');
+              handlePageChange('prev');
+            }}
+            disabled={currentPage === 1}
+          >
+            ◀️
+          </button>
+          <button
+            onClick={() => {
+              console.log('Next Button Clicked');
+              handlePageChange('next');
+            }}
+            disabled={!canGoToNextPage}
+          >
+            ▶️
+          </button>
+        </div>
       </div>
     </div>
   );
