@@ -45,6 +45,8 @@ const Question = () => {
   /* 레벨 선택 이벤트 핸들러 */
   const handleLevelChange = (event) => {
     setSelectedLevel(event.target.value);
+    setIdx(1); // 레벨이 변경될 때마다 idx 초기화
+    setStart(0); // 레벨이 변경될 때마다 start 초기화
   };
 
   /* 레벨 선택 옵션 */
@@ -74,9 +76,11 @@ const Question = () => {
   };
 
   const handlePrevPage = () => {
-    setStart((prevStart) => prevStart - itemsPerPage);
-    setIdx((prevIdx) => prevIdx - itemsPerPage);
-    setCurrentPage((prevPage) => prevPage - 1);
+    if (idx > 1) {
+      setStart((prevStart) => prevStart - itemsPerPage);
+      setIdx((prevIdx) => prevIdx - itemsPerPage);
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
   };
 
   const [query, setQuery] = useState('');
