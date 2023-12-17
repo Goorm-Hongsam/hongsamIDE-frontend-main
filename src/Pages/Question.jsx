@@ -53,7 +53,7 @@ const Question = () => {
 
   useEffect(() => {
     axiosInstance
-      .get(`?question/button=next&level=-1&index=1&size=5`)
+      .get(`question?button=next&level=-1&index=1&size=5`)
       .then((response) => {
         setQuestionData(response.data);
       })
