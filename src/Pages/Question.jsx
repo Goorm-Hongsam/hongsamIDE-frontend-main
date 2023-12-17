@@ -113,6 +113,12 @@ const Question = () => {
 
     const offset = direction === 'next' ? indexOfLastQuest : indexOfFirstQuest;
     fetchData(direction, selectedLevel, offset, 5);
+
+    // 디버깅용 로그 추가
+    console.log('Direction:', direction);
+    console.log('New Page Number:', newPageNumber);
+    console.log('Offset:', offset);
+    console.log('Can Go To Next Page:', canGoToNextPage);
   };
 
   return (

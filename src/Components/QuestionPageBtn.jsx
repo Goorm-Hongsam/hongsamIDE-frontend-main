@@ -9,13 +9,19 @@ const QuestionPageBtn = ({
   return (
     <div className={styles.pageBtns}>
       <button
-        onClick={() => handlePageChange('prev')}
+        onClick={() => {
+          console.log('Prev Button Clicked');
+          handlePageChange('prev');
+        }}
         disabled={currentPage === 1}
       >
         ◀️
       </button>
       <button
-        onClick={() => handlePageChange('next')}
+        onClick={() => {
+          console.log('Next Button Clicked');
+          handlePageChange('next');
+        }}
         disabled={!canGoToNextPage}
       >
         ▶️
