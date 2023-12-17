@@ -45,8 +45,8 @@ const Question = () => {
   /* 레벨 선택 이벤트 핸들러 */
   const handleLevelChange = (event) => {
     setSelectedLevel(event.target.value);
-    setIdx(1); // 레벨이 변경될 때마다 idx 초기화
-    setStart(0); // 레벨이 변경될 때마다 start 초기화
+    setIdx(1);
+    setStart(0);
   };
 
   /* 레벨 선택 옵션 */
@@ -59,25 +59,31 @@ const Question = () => {
   const [start, setStart] = useState(0);
 
   useEffect(() => {
+    let levelParam = selectedLevel;
+    if (selectedLevel === 'all') {
+      levelParam = -1;
+    }
+
+    // 선택된 레벨 및 인덱스를 기반으로 데이터를 가져옵니다.
     axiosInstance
-      .get(`question?button=next&level=-1&index=${idx}&size=5`)
+      .get(
+        `question?button=next&level=${levelParam}&index=${idx}&size=${itemsPerPage}`
+      )
       .then((response) => {
         setQuestionData(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [currentPage, idx]);
+  }, [currentPage, idx, selectedLevel]);
 
   const handleNextPage = () => {
-    setStart((prevStart) => prevStart + itemsPerPage);
     setIdx((prevIdx) => prevIdx + itemsPerPage);
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
   const handlePrevPage = () => {
     if (idx > 1) {
-      setStart((prevStart) => prevStart - itemsPerPage);
       setIdx((prevIdx) => prevIdx - itemsPerPage);
       setCurrentPage((prevPage) => prevPage - 1);
     }
