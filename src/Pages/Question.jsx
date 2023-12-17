@@ -129,7 +129,7 @@ const Question = () => {
       direction === 'next' ? currentPage + 1 : currentPage - 1;
     setCurrentPage(newPageNumber);
 
-    const offset = direction === 'next' ? 'next' : 'previous';
+    const offset = direction === 'next' ? indexOfLastQuest : indexOfFirstQuest;
     fetchData(direction, selectedLevel, offset, 5);
   };
 
