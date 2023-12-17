@@ -51,16 +51,34 @@ const Question = () => {
   const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
   const [questionData, setQuestionData] = useState([]);
 
+  const [idx, setIdx] = useState(1);
+  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+
   useEffect(() => {
     axiosInstance
-      .get(`question?button=next&level=-1&index=1&size=5`)
+      .get(`question?button=next&level=-1&index=${idx}&size=5`)
       .then((response) => {
         setQuestionData(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [currentPage, idx]);
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setStart((prevStart) => prevStart + itemsPerPage);
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setStart((prevStart) => prevStart - itemsPerPage);
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
+  };
 
   const [query, setQuery] = useState('');
   const handlequery = (e) => {
@@ -95,35 +113,6 @@ const Question = () => {
   // 현재 필터된 문제 목록
   const filteredQuests = filterQuestions();
 
-  /* 페이지 당 문제 개수 */
-  const questsPerPage = 10;
-
-  /* 현재 페이지의 기본값 */
-  const [currentPage, setCurrentPage] = useState(1);
-
-  /* 페이지의 마지막 문제 인덱스 */
-  const indexOfLastQuest = currentPage * questsPerPage;
-
-  /* 페이지의 첫 번째 문제 인덱스 */
-  const indexOfFirstQuest = indexOfLastQuest - questsPerPage;
-
-  /* 한 페이지 당 들어갈 문제의 개수 */
-  const currentQuest = filteredQuests.slice(
-    indexOfFirstQuest,
-    indexOfLastQuest
-  );
-
-  /* 현재 페이지 상태 변경 */
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  /* 페이지의 마지막 문제 인덱스가 전체 문제 개수보다 작을 경우 다음 페이지로 이동 가능 */
-  const totalQuests = questionData.length;
-  // 페이지의 마지막 문제 인덱스가 전체 문제 개수와 같거나 작을 경우 다음 페이지로 이동 불가능
-  const canGoToNextPage =
-    indexOfLastQuest < totalQuests && indexOfLastQuest < filteredQuests.length;
-
   return (
     <div>
       <Nav />
@@ -155,14 +144,13 @@ const Question = () => {
           </button>
         </div>
         <QuestionContainer
-          currentQuest={currentQuest}
+          currentQuest={filteredQuests}
           goToEditor={goToEditor}
         />
-        <QuestionPageBtn
-          handlePageChange={handlePageChange}
-          currentPage={currentPage}
-          canGoToNextPage={canGoToNextPage}
-        />
+        <div className={styles.pageBtns}>
+          <button onClick={handlePrevPage}>◀️</button>
+          <button onClick={handleNextPage}>▶️</button>
+        </div>
       </div>
     </div>
   );
