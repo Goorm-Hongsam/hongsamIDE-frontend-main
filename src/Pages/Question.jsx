@@ -52,6 +52,7 @@ const Question = () => {
   const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
   const [questionData, setQuestionData] = useState([]);
 
+  // fetchData 함수 수정
   const fetchData = async (button, level, index, size) => {
     try {
       const response = await axiosInstance.get('/question', {
@@ -63,14 +64,16 @@ const Question = () => {
         },
       });
 
-      setQuestionData(response.data);
+      // 새로운 페이지 데이터만 추가
+      setQuestionData((prevData) => [...prevData, ...response.data]);
     } catch (error) {
       console.error(error);
     }
   };
 
+  // useEffect에서 초기 데이터 요청 시 전체 데이터를 업데이트하지 않도록 수정
   useEffect(() => {
-    fetchData('next', 'all', 1, 5); // 초기 데이터 요청은 무조건 5개로 수정
+    fetchData('next', 'all', 1, 5);
   }, []);
 
   const [query, setQuery] = useState('');
