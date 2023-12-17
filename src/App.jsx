@@ -25,11 +25,20 @@ function App() {
   // body의 배경색을 설정
   useEffect(() => {
     if (isDarkMode) {
-      document.body.style.backgroundColor = '#27272A';
+      document.body.style.backgroundColor = 'black';
       document.body.style.color = 'white';
+
+      for (let i = 0; i < 150; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = `${Math.random() * 100}vw`;
+        star.style.top = `${Math.random() * 100}vh`;
+        star.style.animationDuration = `${Math.random() * 1 + 0.9}s`;
+        document.body.appendChild(star);
+      }
     } else {
       document.body.style.backgroundColor = 'white';
-      document.body.style.color = '#27272A';
+      document.body.style.color = '#black';
     }
   }, [isDarkMode]); // isDarkMode가 변경될 때만 실행
 
