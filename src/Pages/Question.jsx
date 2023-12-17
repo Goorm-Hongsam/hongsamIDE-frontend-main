@@ -70,7 +70,7 @@ const Question = () => {
   };
 
   useEffect(() => {
-    fetchData('next', 'all', 1, 5);
+    fetchData('next', 'all', 1, 5); // 초기 데이터 요청은 무조건 5개로 수정
   }, []);
 
   const [query, setQuery] = useState('');
