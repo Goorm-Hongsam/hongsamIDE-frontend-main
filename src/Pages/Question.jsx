@@ -131,11 +131,17 @@ const Question = () => {
   const handlePageChange = (direction) => {
     const newPageNumber =
       direction === 'next' ? currentPage + 1 : currentPage - 1;
-    setCurrentPage(newPageNumber);
 
-    const offset =
-      direction === 'next' ? indexOfLastQuest + 1 : indexOfFirstQuest - 5;
-    fetchData(direction, selectedLevel, offset, 5);
+    // 버튼을 누를 때, 새로운 페이지만 로드하도록 수정
+    if (direction === 'next') {
+      const offset = indexOfLastQuest + 1;
+      fetchData(direction, selectedLevel, offset, 5);
+    } else if (direction === 'prev' && newPageNumber > 0) {
+      const offset = indexOfFirstQuest - 5;
+      fetchData(direction, selectedLevel, offset, 5);
+    }
+
+    setCurrentPage(newPageNumber);
   };
 
   /* 페이지의 마지막 문제 인덱스가 전체 문제 개수보다 작을 경우 다음 페이지로 이동 가능 */
@@ -143,6 +149,9 @@ const Question = () => {
   // 페이지의 마지막 문제 인덱스가 전체 문제 개수와 같거나 작을 경우 다음 페이지로 이동 불가능
   const canGoToNextPage =
     indexOfLastQuest < totalQuests && indexOfLastQuest < filteredQuests.length;
+
+  // 페이지의 첫 번째 문제 인덱스가 0보다 클 경우 이전 페이지로 이동 가능
+  const canGoToPrevPage = indexOfFirstQuest > 0;
 
   return (
     <div>
@@ -182,6 +191,7 @@ const Question = () => {
           handlePageChange={handlePageChange}
           currentPage={currentPage}
           canGoToNextPage={canGoToNextPage}
+          canGoToPrevPage={canGoToPrevPage}
         />
       </div>
     </div>
