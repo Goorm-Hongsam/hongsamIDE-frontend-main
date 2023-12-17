@@ -150,7 +150,6 @@ const Question = () => {
             className={styles.selectingLevel}
             onChange={handleLevelChange}
             value={selectedLevel}
-            disabled={!Array.isArray(currentQuest) || currentQuest.length === 0}
           >
             {levelOptions.map((option, index) => (
               <option key={index} value={option}>
@@ -168,11 +167,7 @@ const Question = () => {
               }
             }}
           />
-          <button
-            className={styles.searchingBtn}
-            onClick={handleSearch}
-            disabled={!Array.isArray(currentQuest) || currentQuest.length === 0}
-          >
+          <button className={styles.searchingBtn} onClick={handleSearch}>
             검색
           </button>
         </div>
