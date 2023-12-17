@@ -59,7 +59,7 @@ const Question = () => {
   const [start, setStart] = useState(0);
 
   useEffect(() => {
-    let levelParam = selectedLevel;
+    let levelParam = parseInt(selectedLevel.slice(3));
     if (selectedLevel === 'all') {
       levelParam = -1;
     }
