@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Question.module.css';
 import Nav from '../Components/Nav';
+
 import { useAuth } from '../api/AuthContext';
 import QuestionContainer from '../Components/QuestionContainer';
+import QuestionPageBtn from '../Components/QuestionPageBtn';
+
 import instance from '../api/CustomAxios';
 
 const Question = () => {
   const axiosInstance = instance();
-  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+
+  const { isLoggedIn, userData } = useAuth();
 
   /* IDE로 이동하는 함수 */
   const goToEditor = (questionId) => {
@@ -29,7 +35,7 @@ const Question = () => {
       /* 미로그인 시 로그인 페이지로 이동 */
     } else {
       alert('로그인을 해주세요.');
-      // 로그인 페이지로 이동하거나 다른 적절한 처리를 수행할 수 있습니다.
+      navigate('/login');
     }
   };
 
@@ -44,6 +50,17 @@ const Question = () => {
   /* 레벨 선택 옵션 */
   const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
   const [questionData, setQuestionData] = useState([]);
+
+  useEffect(() => {
+    axiosInstance
+      .get(`?question/button=next&level=-1&index=1&size=5`)
+      .then((response) => {
+        setQuestionData(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   const [query, setQuery] = useState('');
   const handlequery = (e) => {
@@ -78,62 +95,34 @@ const Question = () => {
   // 현재 필터된 문제 목록
   const filteredQuests = filterQuestions();
 
-  useEffect(() => {
-    const firstData = async () => {
-      // 초기 데이터를 설정하기 전에 pageIdx와 pageSize를 정의합니다.
-      const newLevel =
-        selectedLevel === 'all' ? -1 : parseInt(selectedLevel.slice(3));
-      const firstPageIdx = 1;
-      const firstPageSize = 5;
+  /* 페이지 당 문제 개수 */
+  const questsPerPage = 10;
 
-      try {
-        const response = await axiosInstance.get(
-          `/question?button=next&level=${newLevel}&index=${firstPageIdx}&size=${firstPageSize}`
-        );
+  /* 현재 페이지의 기본값 */
+  const [currentPage, setCurrentPage] = useState(1);
 
-        if (response.data.status === 200) {
-          setQuestionData(response.data);
-          setPageIdx(firstPageIdx);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  /* 페이지의 마지막 문제 인덱스 */
+  const indexOfLastQuest = currentPage * questsPerPage;
 
-    firstData();
-  }, [selectedLevel]); // selectedLevel이 변경될 때마다 실행합니다.
+  /* 페이지의 첫 번째 문제 인덱스 */
+  const indexOfFirstQuest = indexOfLastQuest - questsPerPage;
 
-  const [pageIdx, setPageIdx] = useState(1);
-  const pageSize = 5;
+  /* 한 페이지 당 들어갈 문제의 개수 */
+  const currentQuest = filteredQuests.slice(
+    indexOfFirstQuest,
+    indexOfLastQuest
+  );
 
-  const handlePageChange = async (direction) => {
-    let newPageIdx;
-    if (direction === 'previous') {
-      newPageIdx = pageIdx - 5;
-    } else if (direction === 'next') {
-      newPageIdx = pageIdx + 5;
-    }
-
-    setPageIdx(newPageIdx);
-    await fetchData(direction, newPageIdx);
+  /* 현재 페이지 상태 변경 */
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
-  const fetchData = async (direction, idx) => {
-    const newLevel =
-      selectedLevel === 'all' ? -1 : parseInt(selectedLevel.slice(3));
-
-    try {
-      const response = await axiosInstance.get(
-        `/question?button=${direction}&level=${newLevel}&index=${idx}&size=${pageSize}`
-      );
-
-      if (response.data.status === 200) {
-        setQuestionData(response.data);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  /* 페이지의 마지막 문제 인덱스가 전체 문제 개수보다 작을 경우 다음 페이지로 이동 가능 */
+  const totalQuests = questionData.length;
+  // 페이지의 마지막 문제 인덱스가 전체 문제 개수와 같거나 작을 경우 다음 페이지로 이동 불가능
+  const canGoToNextPage =
+    indexOfLastQuest < totalQuests && indexOfLastQuest < filteredQuests.length;
 
   return (
     <div>
@@ -166,27 +155,14 @@ const Question = () => {
           </button>
         </div>
         <QuestionContainer
-          currentQuest={filteredQuests}
+          currentQuest={currentQuest}
           goToEditor={goToEditor}
         />
-        <div className={styles.pageBtns}>
-          <button
-            onClick={() => {
-              console.log('Prev Button Clicked');
-              handlePageChange('previous');
-            }}
-          >
-            ◀️
-          </button>
-          <button
-            onClick={() => {
-              console.log('Next Button Clicked');
-              handlePageChange('next');
-            }}
-          >
-            ▶️
-          </button>
-        </div>
+        <QuestionPageBtn
+          handlePageChange={handlePageChange}
+          currentPage={currentPage}
+          canGoToNextPage={canGoToNextPage}
+        />
       </div>
     </div>
   );
