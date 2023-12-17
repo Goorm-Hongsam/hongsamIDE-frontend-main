@@ -108,12 +108,6 @@ const Question = () => {
 
   console.log(canGoToNextPage);
 
-  // 디버깅용 로그 추가
-  console.log('Direction:', direction);
-  console.log('New Page Number:', newPageNumber);
-  console.log('Offset:', offset);
-  console.log('Can Go To Next Page:', canGoToNextPage);
-
   const handlePageChange = (direction) => {
     const newPageNumber =
       direction === 'next' ? currentPage + 1 : currentPage - 1;
