@@ -45,21 +45,32 @@ const Question = () => {
   /* 레벨 선택 이벤트 핸들러 */
   const handleLevelChange = (event) => {
     setSelectedLevel(event.target.value);
+    fetchData('next', event.target.value, 1, 5);
   };
 
   /* 레벨 선택 옵션 */
   const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
   const [questionData, setQuestionData] = useState([]);
 
-  useEffect(() => {
-    axiosInstance
-      .get(`/question`)
-      .then((response) => {
-        setQuestionData(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
+  const fetchData = async (button, level, index, size) => {
+    try {
+      const response = await axiosInstance.get('/question', {
+        params: {
+          button,
+          level: level === 'all' ? -1 : parseInt(level.slice(3)),
+          index,
+          size,
+        },
       });
+
+      setQuestionData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData('next', 'all', 1, 5);
   }, []);
 
   const [query, setQuery] = useState('');
@@ -114,8 +125,14 @@ const Question = () => {
   );
 
   /* 현재 페이지 상태 변경 */
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  const handlePageChange = (direction) => {
+    const newPageNumber =
+      direction === 'next' ? currentPage + 1 : currentPage - 1;
+    setCurrentPage(newPageNumber);
+
+    const offset =
+      direction === 'next' ? indexOfLastQuest + 1 : indexOfFirstQuest - 5;
+    fetchData(direction, selectedLevel, offset, 5);
   };
 
   /* 페이지의 마지막 문제 인덱스가 전체 문제 개수보다 작을 경우 다음 페이지로 이동 가능 */
@@ -166,9 +183,7 @@ const Question = () => {
         <QuestionPageBtn
           handlePageChange={handlePageChange}
           currentPage={currentPage}
-          canGoToNextPage={
-            Array.isArray(currentQuest) && currentQuest.length > 0
-          }
+          canGoToNextPage={canGoToNextPage}
         />
       </div>
     </div>
