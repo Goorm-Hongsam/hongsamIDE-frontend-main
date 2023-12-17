@@ -45,17 +45,6 @@ const Question = () => {
   const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
   const [questionData, setQuestionData] = useState([]);
 
-  useEffect(() => {
-    axiosInstance
-      .get(`question?button=next&level=-1&index=1&size=5`)
-      .then((response) => {
-        setQuestionData(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-
   const [query, setQuery] = useState('');
   const handlequery = (e) => {
     setQuery(e.target.value);
@@ -66,8 +55,6 @@ const Question = () => {
   const handleSearch = () => {
     setSearch(true);
   };
-
-  const [isLoading, setIsLoading] = useState(false);
 
   // 레벨 및 검색어를 고려한 필터링 함수
   const filterQuestions = () => {
@@ -91,50 +78,56 @@ const Question = () => {
   // 현재 필터된 문제 목록
   const filteredQuests = filterQuestions();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const questsPerPage = 5; // You can adjust this value based on your requirements
-  const indexOfLastQuest = currentPage * questsPerPage;
-  const indexOfFirstQuest = indexOfLastQuest - questsPerPage;
+  useEffect(() => {
+    const firstData = async () => {
+      const newLevel =
+        selectedLevel === 'all' ? -1 : parseInt(selectedLevel.slice(3));
 
-  // 페이지 상태 변경 및 API 요청
+      try {
+        const response = await axiosInstance.get(
+          `/question?button=next&level=${newLevel}&index=${pageIdx}&size=${pageSize}`
+        );
 
-  const handlePageChange = async (button) => {
-    if (isLoading) {
-      return; // Do nothing if the previous request is still in progress
-    }
+        if (response.data.status === 200) {
+          setQuestionData(response.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    firstData();
+  }, []);
 
-    let newPageIndex;
-    if (button === 'next') {
-      newPageIndex = currentPage + 5;
-    } else if (button === 'previous' && currentPage > 1) {
-      newPageIndex = currentPage - 5;
-    } else {
-      return; // Do nothing for invalid button or when prev button on the first page
-    }
-
+  const fetchData = async (direction) => {
     const newLevel =
       selectedLevel === 'all' ? -1 : parseInt(selectedLevel.slice(3));
 
     try {
-      setIsLoading(true);
-
       const response = await axiosInstance.get(
-        `/question?button=${button}&level=${newLevel}&index=${
-          newPageIndex - 1
-        }&size=5`
+        `/question?button=${direction}&level=${newLevel}&index=${pageIdx}&size=${pageSize}`
       );
 
       if (response.data.status === 200) {
         setQuestionData(response.data);
-        setCurrentPage(newPageIndex);
       }
     } catch (error) {
       console.error(error);
-      // 에러 발생 시 적절한 처리를 수행할 수 있습니다.
-    } finally {
-      setIsLoading(false);
     }
   };
+
+  const [pageIdx, setPageIdx] = useState(1);
+  const pageSize = 5;
+
+  const handlePageChange = (direction) => {
+    if (direction === 'previous' && pageIdx > 1) {
+      setPageIdx(pageIdx - 5);
+      fetchData(direction);
+    } else if (direction === 'next') {
+      setPageIdx(pageIdx + 5);
+      fetchData(direction);
+    }
+  };
+
   return (
     <div>
       <Nav />
