@@ -9,8 +9,9 @@
 }
 
 * {
-  margin: 0;
-  padding: 0;
+  margin: 0px;
+  padding: 0px;
+
   font-family: 'NeoDunggeunmoPro-Regular';
 }
 
@@ -22,8 +23,13 @@
   --alert-color: #ff6464;
 }
 
+html {
+  width: 100vw;
+  height: 100vh;
+}
+
 body {
-  transition: background-color 0.7s ease, color 0.7s ease; /* 배경색 및 글자색 전환 효과 */
+  transition: background-color 0.7s ease, color 0.7s ease;
 }
 
 .star {
