@@ -11,7 +11,6 @@
 * {
   margin: 0px;
   padding: 0px;
-
   font-family: 'NeoDunggeunmoPro-Regular';
 }
 
@@ -21,11 +20,6 @@
   --lightGray-color: #f3f3f3;
   --darkGray-color: #b0b0b0;
   --alert-color: #ff6464;
-}
-
-html {
-  width: 100vw;
-  height: 100vh;
 }
 
 body {

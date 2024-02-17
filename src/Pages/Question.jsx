@@ -123,7 +123,7 @@ const Question = () => {
   const filteredQuests = filterQuestions();
 
   return (
-    <div>
+    <div className={styles.QuestionWrapper}>
       <Nav />
       <div className={styles.Question}>
         <div className={styles.findingQuestion}>
@@ -140,7 +140,7 @@ const Question = () => {
           </select>
           <input
             className={styles.searchingTitle}
-            placeholder="풀고 싶은 문제 제목을 검색하세요."
+            placeholder="문제 제목을 검색하세요."
             onChange={handlequery}
             onKeyUp={(e) => {
               if (e.key === 'Enter') {
@@ -153,7 +153,58 @@ const Question = () => {
           </button>
         </div>
         <QuestionContainer
-          currentQuest={filteredQuests}
+          currentQuest={[
+            {
+              id: 1,
+              title: '일이삼사오육칠팔구십일이삽사오육칠팔',
+              level: '2',
+            },
+            {
+              id: 2,
+              title: 'test2',
+              level: '2',
+            },
+            {
+              id: 1,
+              title: '일이삼사오육칠팔구십일이삽사오육칠팔',
+              level: '2',
+            },
+            {
+              id: 2,
+              title: 'test2',
+              level: '2',
+            },
+            {
+              id: 1,
+              title: '일이삼사오육칠팔구십일이삽사오육칠팔',
+              level: '2',
+            },
+            {
+              id: 2,
+              title: 'test2',
+              level: '2',
+            },
+            {
+              id: 1,
+              title: '일이삼사오육칠팔구십일이삽사오육칠팔',
+              level: '2',
+            },
+            {
+              id: 2,
+              title: 'test2',
+              level: '2',
+            },
+            {
+              id: 1,
+              title: '일이삼사오육칠팔구십일이삽사오육칠팔',
+              level: '2',
+            },
+            {
+              id: 2,
+              title: 'test2',
+              level: '2',
+            },
+          ]}
           goToEditor={goToEditor}
         />
         <div className={styles.pageBtns}>

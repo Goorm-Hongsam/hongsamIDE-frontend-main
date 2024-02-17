@@ -18,7 +18,7 @@ const Mypage = () => {
         withCredentials: true,
       })
       .then((response) => {
-        if (response.data.status === 400) {
+        if (response.data.status === 403) {
           alert('로그인 후 이용해주세요.');
           navigate('/login');
         }
