@@ -27,7 +27,7 @@ const Signup = () => {
     if (email) {
       try {
         const response = await axiosInstance.post(
-          `members/signup/email-check`,
+          `api/members/signup/email-check`,
           { email }
         );
 
@@ -56,15 +56,15 @@ const Signup = () => {
       };
 
       axiosInstance
-        .post(`members/signup`, Data)
-        .then((response) => {
+        .post(`api/members/signup`, Data)
+        .then(response => {
           /* 회원가입 완료 */
           if (response.data.status === 200) {
             alert('회원가입이 완료되었습니다.');
             navigate('/login');
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
         });
       /* 이메일 중복 검사 미완료 */
@@ -136,7 +136,7 @@ const Signup = () => {
           placeholder="비밀번호를 다시 입력해주세요."
           {...register('confirm', {
             required: true,
-            validate: (value) => value === passwordInputRef.current,
+            validate: value => value === passwordInputRef.current,
           })}
         />
         {errors.confirm && errors.confirm.type === 'required' && (

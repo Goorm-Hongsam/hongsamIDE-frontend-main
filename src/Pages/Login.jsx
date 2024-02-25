@@ -29,18 +29,18 @@ const Login = () => {
     };
 
     axiosInstance
-      .post(`members/login`, Data, {
-        withCredentials: true,
-      })
-      .then((response) => {
+      .post(`api/members/login`, Data)
+      .then(response => {
         if (response.data.status === 200) {
           login(response.data.data);
           navigate('/question');
         } else if (response.data.status === 400) {
           alert('아이디 또는 비밀번호가 맞지 않습니다.');
+        } else {
+          console.log(response);
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
       });
   };
