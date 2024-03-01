@@ -46,6 +46,7 @@
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
+  z-index: 999;
 }
 
 .dropdown li {
