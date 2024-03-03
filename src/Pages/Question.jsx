@@ -2,26 +2,76 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Question.module.css';
 import Nav from '../Components/Nav';
+import axios from 'axios';
 
 import { useAuth } from '../api/AuthContext';
 import QuestionContainer from '../Components/QuestionContainer';
-
 import instance from '../api/CustomAxios';
 
 const Question = () => {
   const axiosInstance = instance();
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
 
-  const { isLoggedIn, userData } = useAuth();
+  const [selectedLevel, setSelectedLevel] = useState('all');
+  const [questionData, setQuestionData] = useState([]);
+  const [idx, setIdx] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [query, setQuery] = useState('');
+  const [pageButton, setPageButton] = useState('next');
+  const [search, setSearch] = useState(false);
 
-  /* IDE로 이동하는 함수 */
+  const itemsPerPage = 5;
+
+  const handleNextPage = () => {
+    setIdx(prevIdx => prevIdx + itemsPerPage);
+    setCurrentPage(prevPage => prevPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (idx > 0) {
+      setPageButton('prev');
+      setIdx(prevIdx => prevIdx - itemsPerPage);
+      setCurrentPage(prevPage => prevPage - 1);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        let levelParam =
+          selectedLevel === 'all' ? -1 : parseInt(selectedLevel.slice(3));
+        const response = await axios.get(
+          `http://localhost:8081/question?button=${pageButton}&level=${levelParam}&index=${idx}&size=${itemsPerPage}`,
+          { withCredentials: true }
+        );
+        setQuestionData(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, idx, selectedLevel, pageButton]);
+
+  const handleLevelChange = event => {
+    setSelectedLevel(event.target.value);
+    setIdx(0);
+    setCurrentPage(1);
+  };
+
+  const handlequery = e => {
+    setQuery(e.target.value);
+  };
+
+  const handleSearch = () => {
+    setSearch(true);
+  };
+
   const goToEditor = questionId => {
-    /* 로그인 시 uuid와 questionId를 가지고 이동 */
     if (isLoggedIn) {
       axiosInstance
-        .get(`/question/${questionId}`, {
-          withCredentials: true,
-        })
+        .get(`/question/${questionId}`, { withCredentials: true })
         .then(response => {
           if (response.data.status === 200) {
             const uuid = response.data.data;
@@ -31,79 +81,15 @@ const Question = () => {
         .catch(error => {
           console.log(error);
         });
-      /* 미로그인 시 로그인 페이지로 이동 */
     } else {
       alert('로그인을 해주세요.');
       navigate('/login');
     }
   };
 
-  /* 레벨 선택 상태 */
-  const [selectedLevel, setSelectedLevel] = useState('all');
-
-  /* 레벨 선택 이벤트 핸들러 */
-  const handleLevelChange = event => {
-    setSelectedLevel(event.target.value);
-    setIdx(1);
-    setStart(0);
-  };
-
-  /* 레벨 선택 옵션 */
-  const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
-  const [questionData, setQuestionData] = useState([]);
-
-  const [idx, setIdx] = useState(1);
-  const itemsPerPage = 5;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [start, setStart] = useState(0);
-
-  useEffect(() => {
-    let levelParam = parseInt(selectedLevel.slice(3));
-    if (selectedLevel === 'all') {
-      levelParam = -1;
-    }
-
-    // 선택된 레벨 및 인덱스를 기반으로 데이터를 가져옵니다.
-    axiosInstance
-      .get(
-        `question?button=next&level=${levelParam}&index=${idx}&size=${itemsPerPage}`
-      )
-      .then(response => {
-        setQuestionData(response.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }, [currentPage, idx, selectedLevel]);
-
-  const handleNextPage = () => {
-    setIdx(prevIdx => prevIdx + itemsPerPage);
-    setCurrentPage(prevPage => prevPage + 1);
-  };
-
-  const handlePrevPage = () => {
-    if (idx > 1) {
-      setIdx(prevIdx => prevIdx - itemsPerPage);
-      setCurrentPage(prevPage => prevPage - 1);
-    }
-  };
-
-  const [query, setQuery] = useState('');
-  const handlequery = e => {
-    setQuery(e.target.value);
-  };
-
-  const [search, setSearch] = useState(false);
-
-  const handleSearch = () => {
-    setSearch(true);
-  };
-
-  // 레벨 및 검색어를 고려한 필터링 함수
   const filterQuestions = () => {
     let filtered = questionData;
 
-    // 레벨 필터링
     if (selectedLevel !== 'all') {
       filtered = filtered.filter(
         question =>
@@ -111,14 +97,13 @@ const Question = () => {
       );
     }
 
-    // 검색어 필터링
     if (query.trim() !== '' && search) {
       filtered = filtered.filter(question => question.title.includes(query));
     }
+
     return filtered;
   };
 
-  // 현재 필터된 문제 목록
   const filteredQuests = filterQuestions();
 
   return (
@@ -131,7 +116,7 @@ const Question = () => {
             onChange={handleLevelChange}
             value={selectedLevel}
           >
-            {levelOptions.map((option, index) => (
+            {['all', 'Lv.0', 'Lv.1', 'Lv.2'].map((option, index) => (
               <option key={index} value={option}>
                 {option === 'all' ? '전체' : `${option}`}
               </option>
@@ -151,12 +136,10 @@ const Question = () => {
             검색
           </button>
         </div>
-        {
-          <QuestionContainer
-            currentQuest={filteredQuests}
-            goToEditor={goToEditor}
-          />
-        }
+        <QuestionContainer
+          currentQuest={filteredQuests}
+          goToEditor={goToEditor}
+        />
         <div className={styles.pageBtns}>
           <button onClick={handlePrevPage}>◀️</button>
           <button onClick={handleNextPage}>▶️</button>

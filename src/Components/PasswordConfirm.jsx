@@ -24,7 +24,7 @@ const PasswordConfirm = ({ setIsPasswordModalOpen, onPasswordConfirmed }) => {
 
   const checkPassword = () => {
     axiosInstance
-      .post(`/apimypage/pw-check`, { password })
+      .post(`/api/mypage/pw-check`, { password })
       .then(response => {
         onPasswordConfirmed();
         passwordModalClose();
