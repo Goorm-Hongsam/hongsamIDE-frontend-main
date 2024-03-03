@@ -1,6 +1,6 @@
 .header {
   height: 50px;
-  width: 100%;
+  width: 100vw;
   border-bottom: 1px solid var(--main-color);
   display: flex;
   align-items: center;
@@ -46,6 +46,7 @@
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
+  z-index: 999;
 }
 
 .dropdown li {

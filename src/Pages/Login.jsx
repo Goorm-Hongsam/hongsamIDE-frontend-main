@@ -29,18 +29,14 @@ const Login = () => {
     };
 
     axiosInstance
-      .post(`members/login`, Data, {
-        withCredentials: true,
+      .post(`/api/members/login`, Data)
+      .then(response => {
+        localStorage.setItem('Authorization', response.headers.authorization);
+        login(response.data);
+        navigate('/mypage');
       })
-      .then((response) => {
-        if (response.data.status === 200) {
-          login(response.data.data);
-          navigate('/question');
-        } else if (response.data.status === 400) {
-          alert('아이디 또는 비밀번호가 맞지 않습니다.');
-        }
-      })
-      .catch((error) => {
+      .catch(error => {
+        alert('아이디 또는 비밀번호가 맞지 않습니다.');
         console.error(error);
       });
   };

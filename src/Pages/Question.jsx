@@ -5,7 +5,6 @@ import Nav from '../Components/Nav';
 
 import { useAuth } from '../api/AuthContext';
 import QuestionContainer from '../Components/QuestionContainer';
-import QuestionPageBtn from '../Components/QuestionPageBtn';
 
 import instance from '../api/CustomAxios';
 
@@ -16,20 +15,20 @@ const Question = () => {
   const { isLoggedIn, userData } = useAuth();
 
   /* IDE로 이동하는 함수 */
-  const goToEditor = (questionId) => {
+  const goToEditor = questionId => {
     /* 로그인 시 uuid와 questionId를 가지고 이동 */
     if (isLoggedIn) {
       axiosInstance
         .get(`/question/${questionId}`, {
           withCredentials: true,
         })
-        .then((response) => {
+        .then(response => {
           if (response.data.status === 200) {
             const uuid = response.data.data;
             window.location.href = `https://ide.hong-sam.online/${uuid}/q${questionId}`;
           }
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
         });
       /* 미로그인 시 로그인 페이지로 이동 */
@@ -43,7 +42,7 @@ const Question = () => {
   const [selectedLevel, setSelectedLevel] = useState('all');
 
   /* 레벨 선택 이벤트 핸들러 */
-  const handleLevelChange = (event) => {
+  const handleLevelChange = event => {
     setSelectedLevel(event.target.value);
     setIdx(1);
     setStart(0);
@@ -69,28 +68,28 @@ const Question = () => {
       .get(
         `question?button=next&level=${levelParam}&index=${idx}&size=${itemsPerPage}`
       )
-      .then((response) => {
+      .then(response => {
         setQuestionData(response.data);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
       });
   }, [currentPage, idx, selectedLevel]);
 
   const handleNextPage = () => {
-    setIdx((prevIdx) => prevIdx + itemsPerPage);
-    setCurrentPage((prevPage) => prevPage + 1);
+    setIdx(prevIdx => prevIdx + itemsPerPage);
+    setCurrentPage(prevPage => prevPage + 1);
   };
 
   const handlePrevPage = () => {
     if (idx > 1) {
-      setIdx((prevIdx) => prevIdx - itemsPerPage);
-      setCurrentPage((prevPage) => prevPage - 1);
+      setIdx(prevIdx => prevIdx - itemsPerPage);
+      setCurrentPage(prevPage => prevPage - 1);
     }
   };
 
   const [query, setQuery] = useState('');
-  const handlequery = (e) => {
+  const handlequery = e => {
     setQuery(e.target.value);
   };
 
@@ -107,14 +106,14 @@ const Question = () => {
     // 레벨 필터링
     if (selectedLevel !== 'all') {
       filtered = filtered.filter(
-        (question) =>
+        question =>
           parseInt(question.level) === parseInt(selectedLevel.slice(3))
       );
     }
 
     // 검색어 필터링
     if (query.trim() !== '' && search) {
-      filtered = filtered.filter((question) => question.title.includes(query));
+      filtered = filtered.filter(question => question.title.includes(query));
     }
     return filtered;
   };
@@ -123,7 +122,7 @@ const Question = () => {
   const filteredQuests = filterQuestions();
 
   return (
-    <div>
+    <div className={styles.QuestionWrapper}>
       <Nav />
       <div className={styles.Question}>
         <div className={styles.findingQuestion}>
@@ -140,9 +139,9 @@ const Question = () => {
           </select>
           <input
             className={styles.searchingTitle}
-            placeholder="풀고 싶은 문제 제목을 검색하세요."
+            placeholder="문제 제목을 검색하세요."
             onChange={handlequery}
-            onKeyUp={(e) => {
+            onKeyUp={e => {
               if (e.key === 'Enter') {
                 handleSearch();
               }
@@ -152,10 +151,12 @@ const Question = () => {
             검색
           </button>
         </div>
-        <QuestionContainer
-          currentQuest={filteredQuests}
-          goToEditor={goToEditor}
-        />
+        {
+          <QuestionContainer
+            currentQuest={filteredQuests}
+            goToEditor={goToEditor}
+          />
+        }
         <div className={styles.pageBtns}>
           <button onClick={handlePrevPage}>◀️</button>
           <button onClick={handleNextPage}>▶️</button>

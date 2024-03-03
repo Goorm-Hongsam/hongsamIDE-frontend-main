@@ -12,11 +12,11 @@ const PasswordConfirm = ({ setIsPasswordModalOpen, onPasswordConfirmed }) => {
     passwordInputRef.current.focus();
   }, []);
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = e => {
     setPassword(e.target.value);
   };
 
-  const handleKeyUp = (e) => {
+  const handleKeyUp = e => {
     if (e.key === 'Enter') {
       checkPassword();
     }
@@ -24,23 +24,14 @@ const PasswordConfirm = ({ setIsPasswordModalOpen, onPasswordConfirmed }) => {
 
   const checkPassword = () => {
     axiosInstance
-      .post(
-        `mypage/pw-check`,
-        { password },
-        {
-          withCredentials: true,
-        }
-      )
-      .then((response) => {
-        if (response.data.status === 200) {
-          onPasswordConfirmed();
-          passwordModalClose();
-        } else {
-          alert('비밀번호가 일치하지 않습니다.');
-          setPassword('');
-        }
+      .post(`/apimypage/pw-check`, { password })
+      .then(response => {
+        onPasswordConfirmed();
+        passwordModalClose();
       })
-      .catch((error) => {
+      .catch(error => {
+        alert('비밀번호가 일치하지 않습니다.');
+        setPassword('');
         console.log(error);
       });
   };

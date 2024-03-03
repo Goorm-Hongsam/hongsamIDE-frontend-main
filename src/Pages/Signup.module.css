@@ -43,7 +43,7 @@
   border: none;
   background-color: var(--lightGray-color);
   padding: 15px 15px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   font-size: 14px;
 }
 
@@ -68,6 +68,7 @@ input[type='text'] {
 
 .confirmIdBtn {
   box-sizing: border-box;
+  height: 45px;
   width: 90px;
   border: none;
   border-radius: 5px;

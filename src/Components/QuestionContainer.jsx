@@ -7,7 +7,7 @@ const QuestionContainer = ({ currentQuest, goToEditor }) => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>문제 번호</th>
+            <th>No.</th>
             <th>난이도</th>
             <th>제목</th>
           </tr>

@@ -1,83 +1,52 @@
+@import '../reset.css';
+
+.QuestionWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
 .Question {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   font-size: 16px;
+  margin: 0 auto;
 }
 
 .findingQuestion {
   display: flex;
-  gap: 15px;
-  justify-content: center;
-  padding-top: 100px;
+  align-items: center;
+  gap: 10px;
+  padding: 0px 10px;
 }
 
-.findingQuestion input {
-  display: block;
+.findingQuestion .searchingTitle {
+  border: none;
   box-sizing: border-box;
   border-radius: 4px;
-  border: none;
+  height: 40px;
   background-color: var(--lightGray-color);
   padding: 15px 15px;
-  margin-bottom: 5px;
-  font-size: 14px;
-  font-family: 'NeoDunggeunmoPro-Regular';
-  width: 440px;
-  height: 40px;
+  width: 400px;
 }
 
-.searchingBtn {
+.findingQuestion .searchingBtn {
   border: none;
-  width: 50px;
-  border-radius: 5px;
+  border-radius: 4px;
   background-color: var(--main-color);
   color: white;
   cursor: pointer;
   height: 40px;
-}
-
-.selectingLevel {
-  width: 80px;
-  height: 40px;
-  padding-left: 10px;
-  border-radius: 5px;
-  border: 1px solid var(--lightGray-color);
-}
-
-.tableContainer {
-  display: flex;
-  justify-content: center;
-  padding-top: 30px;
-}
-
-.table th {
-  background-color: var(--main-color);
-  font-weight: bold;
-  padding: 8px;
-  text-align: left;
-  border: 1px solid var(--lightGray-color);
-  width: 100px;
-  color: white;
-}
-
-.table th:last-child {
-  width: 350px;
-}
-
-.table td {
   padding: 10px;
-  font-size: 16px;
-  text-align: left;
-  border: 1px solid var(--lightGray-color);
 }
 
-.selectingQuestion {
-  cursor: pointer;
-}
-
-.selectingQuestion:hover {
-  color: var(--main-color);
+.findingQuestion .selectingLevel {
+  border: none;
+  border-radius: 4px;
+  padding-left: 5px;
+  height: 40px;
 }
 
 .pageBtns {
@@ -102,4 +71,66 @@
 .Question button:disabled {
   background-color: var(--darkGray-color);
   cursor: unset;
+}
+
+.tableContainer {
+  box-sizing: border-box;
+  width: 530px;
+  padding: 20px 10px;
+}
+
+.tableContainer .table {
+  width: 100%;
+  border: 1px solid var(--lightGray-color);
+}
+
+.tableContainer .table th {
+  text-align: left;
+  padding: 10px 5px;
+  border: 1px solid var(--lightGray-color);
+  background-color: var(--main-color);
+  color: white;
+}
+
+.table th {
+  width: 50px;
+}
+
+.table th:nth-child(3) {
+  width: 200px;
+}
+
+.tableContainer .table td {
+  text-align: left;
+  padding: 10px 5px;
+  border: 1px solid var(--lightGray-color);
+  word-break: break-all;
+}
+
+.selectingQuestion {
+  cursor: pointer;
+}
+
+.selectingQuestion:hover {
+  color: var(--main-color);
+}
+
+@media screen and (min-width: 375px) and (max-width: 767px) {
+  .findingQuestion .searchingTitle {
+    width: 200px;
+  }
+
+  .tableContainer {
+    width: 340px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .findingQuestion .searchingTitle {
+    width: 500px;
+  }
+
+  .tableContainer {
+    width: 650px;
+  }
 }

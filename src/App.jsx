@@ -26,7 +26,7 @@ function App() {
   useEffect(() => {
     // 기존의 별 삭제
     const existingStars = document.querySelectorAll('.star');
-    existingStars.forEach((star) => {
+    existingStars.forEach(star => {
       document.body.removeChild(star);
     });
 
