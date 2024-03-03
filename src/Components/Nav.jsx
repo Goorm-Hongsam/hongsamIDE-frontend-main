@@ -11,20 +11,19 @@ const Nav = () => {
   const { isLoggedIn, userData, logout, login } = useAuth();
 
   useEffect(() => {
-    // 세션 체크를 위한 GET 요청
-    axiosInstance
-      .get('', {
-        withCredentials: true,
-      })
-      .then((response) => {
-        if (response.data.status === 200) {
-          login(response.data.data);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+    const fetchUserData = async () => {
+      try {
+        const response = await axiosInstance.post(`/api/members/login-check`);
+        login(response.data);
+      } catch (error) {
+        console.error('유저 정보를 불러오는 중 에러 발생:', error);
+      }
+    };
+
+    if (!userData) {
+      fetchUserData();
+    }
+  }, [userData]);
 
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -32,7 +31,7 @@ const Nav = () => {
   const userName = isLoggedIn ? `${userData.username} 님` : '로그인';
 
   const toggleDropdown = () => {
-    setIsDropdownOpen((prevIsDropdownOpen) => !prevIsDropdownOpen);
+    setIsDropdownOpen(prevIsDropdownOpen => !prevIsDropdownOpen);
   };
 
   const goToMypage = () => {
@@ -45,22 +44,24 @@ const Nav = () => {
 
   const goToLogout = () => {
     axiosInstance
-      .post(
-        `members/logout`,
-        {},
-        {
-          withCredentials: true,
-        }
-      )
-      .then((response) => {
-        if (response.data.status === 200) {
-          logout();
-          alert('로그아웃 되었습니다.');
-          navigate('/');
-        }
+      .post(`/api/members/logout`, {})
+      .then(response => {
+        logout();
+        alert('로그아웃 되었습니다.');
+        navigate('/');
       })
-      .catch((error) => {
+      .catch(error => {
         console.log(error);
+        if (error.response && error.response.status === 406) {
+          alert('로그아웃 되었습니다.');
+          // 토큰이 유효하지 않음을 서버에서 알려줄 때
+          logout(); // 로그아웃 수행
+          navigate('/');
+          localStorage.removeItem('Authorization');
+        } else {
+          // 다른 에러 처리
+          console.log(error);
+        }
       });
   };
 

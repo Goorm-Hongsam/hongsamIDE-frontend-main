@@ -11,25 +11,27 @@ const Mypage = () => {
   const axiosInstance = instance();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // 세션 체크를 위한 GET 요청
-    axiosInstance
-      .get('', {
-        withCredentials: true,
-      })
-      .then((response) => {
-        if (response.data.status === 403) {
-          alert('로그인 후 이용해주세요.');
-          navigate('/login');
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
   /* 로그인 & 유저 정보 전역관리 */
   const { userData, login, logout } = useAuth();
+
+  useEffect(() => {
+    if (!userData) {
+      navigate('/');
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axiosInstance.post(`/api/members/login-check`);
+        login(response.data);
+      } catch (error) {
+        console.error('유저 정보를 불러오는 중 에러 발생:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   /* 유저 이메일 & 이름 */
   const userEmail = userData?.email || '사용자 이메일 없음';
@@ -48,42 +50,17 @@ const Mypage = () => {
 
   const [isModifiedModalOpen, setIsModifiedModalOpen] = useState(false);
 
-  const goToLogout = () => {
-    axios
-      .post(
-        `members/logout`,
-        {},
-        {
-          withCredentials: true,
-        }
-      )
-      .then((response) => {
-        console.log('Logout response:', response);
-        if (response.data.status === 200) {
-          logout();
-          navigate('/');
-        }
-      })
-      .catch((error) => {
-        console.error('Logout error:', error);
-      });
-  };
-
   const quitOpen = () => {
     if (window.confirm('정말 탈퇴하시겠어요? 🥺')) {
-      axios
-        .delete(`mypage/members`, {
-          withCredentials: true,
+      axiosInstance
+        .delete(`/api/mypage/members`)
+        .then(response => {
+          alert('탈퇴 되었습니다 😭');
+          localStorage.removeItem('Authorization');
+          window.location.reload();
         })
-        .then((response) => {
-          if (response.data.status === 200) {
-            alert('탈퇴 되었습니다 😭');
-            goToLogout();
-          } else {
-            console.log('Failed to quit');
-          }
-        })
-        .catch((error) => {
+        .catch(error => {
+          alert('비정상적인 접근입니다.');
           console.error(error);
         });
     } else {

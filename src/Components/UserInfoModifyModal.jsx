@@ -18,6 +18,8 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
   const passwordInputRef = useRef(null);
   passwordInputRef.current = watch('password');
 
+  const { userData, login } = useAuth();
+
   /* 유저 정보 업데이트 핸들러 */
   const handleUserInfoUpdate = () => {
     const username = watch('username');
@@ -27,37 +29,32 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
     const passwordToSend = password || null;
 
     axiosInstance
-      .put(
-        `mypage/info`,
-        { username: usernameToSend, password: passwordToSend },
-        {
-          withCredentials: true,
-        }
-      )
-      .then((response) => {
-        if (response.data.status === 200) {
+      .put(`/api/mypage/info`, {
+        username: usernameToSend,
+        password: passwordToSend,
+      })
+      .then(response => {
+        if (response.status === 200) {
           alert('변경사항이 저장되었습니다.');
           setIsModifiedModalOpen(false);
-          window.location.reload();
-        } else if (response.data.status === 402) {
+          login(response.data);
+          localStorage.setItem('Authorization', response.headers.authorization);
+        } else if (response.status === 402) {
           alert('기존 비밀번호와 동일합니다.');
           setFocus('password');
-        } else if (response.data.status === 403) {
+        } else if (response.status === 403) {
           alert('기존 이름과 동일합니다.');
           setFocus('username');
-        } else {
-          console.log('Failed to update user information');
         }
       })
-      .catch((error) => {
+      .catch(error => {
         console.error(error);
       });
   };
 
-  const { userData } = useAuth();
   const [userPhoto, setUserPhoto] = useState(userData?.profileUrl || null);
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = e => {
     const selectedFile = e.target.files[0];
 
     if (selectedFile) {
@@ -65,21 +62,13 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
       formData.append('profileImg', selectedFile);
 
       axiosInstance
-        .post(`mypage/profile-img`, formData, {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+        .post(`/api/mypage/profile-img`, formData)
+        .then(response => {
+          setUserPhoto(URL.createObjectURL(selectedFile));
+          login(response.data);
+          alert('프로필 이미지가 업데이트되었습니다.');
         })
-        .then((response) => {
-          if (response.data.status === 200) {
-            setUserPhoto(URL.createObjectURL(selectedFile));
-            alert('프로필 이미지가 업데이트되었습니다.');
-          } else {
-            alert('이미지 업로드에 실패했습니다.');
-          }
-        })
-        .catch((error) => {
+        .catch(error => {
           console.error(error);
           alert('이미지 업로드 중 오류가 발생했습니다.');
         });
@@ -137,7 +126,7 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
             <input
               name="password"
               type="password"
-              placeholder="영문+숫자+특수문자 조합의 7~15자로 입력해주세요."
+              placeholder="영문+숫자+특수문자 조합의 7~15자"
               autoComplete="off"
               {...register('password', {
                 pattern:
