@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useAsyncError, useNavigate } from 'react-router-dom';
 import styles from './Question.module.css';
 import Nav from '../Components/Nav';
 
@@ -7,6 +7,7 @@ import { useAuth } from '../api/AuthContext';
 import QuestionContainer from '../Components/QuestionContainer';
 
 import instance from '../api/CustomAxios';
+import axios from 'axios';
 
 const Question = () => {
   const axiosInstance = instance();
@@ -45,17 +46,19 @@ const Question = () => {
   const handleLevelChange = event => {
     setSelectedLevel(event.target.value);
     setIdx(1);
-    setStart(0);
   };
 
   /* 레벨 선택 옵션 */
   const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
   const [questionData, setQuestionData] = useState([]);
 
-  const [idx, setIdx] = useState(1);
-  const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  const [start, setStart] = useState(0);
+  const [idx, setIdx] = useState(0);
+  const itemPerPage = 5;
+  const [pageButton, setPageButton] = useState('next');
+  const [data, setData] = useState([]);
+  const [isPrevDisabled, setIsPrevDisabled] = useState(false);
+  const [isNextDisabled, setIsNextDisabled] = useState(false);
 
   useEffect(() => {
     let levelParam = parseInt(selectedLevel.slice(3));
@@ -63,28 +66,45 @@ const Question = () => {
       levelParam = -1;
     }
 
-    // 선택된 레벨 및 인덱스를 기반으로 데이터를 가져옵니다.
-    axiosInstance
-      .get(
-        `question?button=next&level=${levelParam}&index=${idx}&size=${itemsPerPage}`
-      )
-      .then(response => {
-        setQuestionData(response.data);
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }, [currentPage, idx, selectedLevel]);
+    if (pageButton === 'next' || pageButton === 'previous') {
+      axios
+        .get(
+          `http://localhost:8081/question?button=${pageButton}&level=${levelParam}&index=${idx}&size=${itemPerPage}`
+        )
+        .then(response => {
+          setQuestionData(response.data);
+          setData(response.data);
+
+          if (currentPage === 1) {
+            setIsPrevDisabled(true);
+          } else if (response.data.length < 5) {
+            setIsNextDisabled(true);
+          } else {
+            setIsNextDisabled(false);
+            setIsPrevDisabled(false);
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }, [currentPage, selectedLevel, pageButton, setIdx]);
 
   const handleNextPage = () => {
-    setIdx(prevIdx => prevIdx + itemsPerPage);
+    setPageButton('next');
     setCurrentPage(prevPage => prevPage + 1);
+
+    const first = data[data.length - 1];
+    setIdx(first.id);
   };
 
   const handlePrevPage = () => {
-    if (idx > 1) {
-      setIdx(prevIdx => prevIdx - itemsPerPage);
+    if (currentPage > 1) {
       setCurrentPage(prevPage => prevPage - 1);
+      setPageButton('previous');
+
+      const last = data[0];
+      setIdx(last.id);
     }
   };
 
@@ -158,8 +178,12 @@ const Question = () => {
           />
         }
         <div className={styles.pageBtns}>
-          <button onClick={handlePrevPage}>◀️</button>
-          <button onClick={handleNextPage}>▶️</button>
+          <button onClick={handlePrevPage} disabled={isPrevDisabled}>
+            ◀️
+          </button>
+          <button onClick={handleNextPage} disabled={isNextDisabled}>
+            ▶️
+          </button>
         </div>
       </div>
     </div>
