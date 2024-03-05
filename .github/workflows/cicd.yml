@@ -3,8 +3,6 @@ name: hongsamIDE-front-main
 on:
   push:
     branches: [ "main" ]
-  # pull_request:
-  #   branches: [ "main" ]
 
 jobs:
   build:
