@@ -29,7 +29,7 @@ const Login = () => {
     };
 
     axiosInstance
-      .post(`/api/members/login`, Data)
+      .post(`/members/login`, Data)
       .then(response => {
         localStorage.setItem('Authorization', response.headers.authorization);
         login(response.data);

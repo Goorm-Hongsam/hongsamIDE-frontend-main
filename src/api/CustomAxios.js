@@ -57,7 +57,7 @@ const instance = () => {
 
   function getNewToken() {
     return axiosInstance
-      .post(`/api/members/login-check`, { withCredentials: true })
+      .post(`/login-check`, { withCredentials: true })
       .then(response => {
         if (response.status === 200) {
           localStorage.setItem('Authorization', response.headers.authorization);

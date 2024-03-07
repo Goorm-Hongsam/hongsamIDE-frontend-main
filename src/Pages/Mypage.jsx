@@ -23,7 +23,7 @@ const Mypage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axiosInstance.post(`/api/members/login-check`);
+        const response = await axiosInstance.post(`/login-check`);
         login(response.data);
       } catch (error) {
         console.error('유저 정보를 불러오는 중 에러 발생:', error);
@@ -53,7 +53,7 @@ const Mypage = () => {
   const quitOpen = () => {
     if (window.confirm('정말 탈퇴하시겠어요? 🥺')) {
       axiosInstance
-        .delete(`/api/mypage/members`)
+        .delete(`/mypage/members`)
         .then(response => {
           alert('탈퇴 되었습니다 😭');
           localStorage.removeItem('Authorization');

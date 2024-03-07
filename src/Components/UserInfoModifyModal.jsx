@@ -29,7 +29,7 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
     const passwordToSend = password || null;
 
     axiosInstance
-      .put(`/api/mypage/info`, {
+      .put(`/mypage/info`, {
         username: usernameToSend,
         password: passwordToSend,
       })
@@ -62,7 +62,7 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
       formData.append('profileImg', selectedFile);
 
       axiosInstance
-        .post(`/api/mypage/profile-img`, formData)
+        .post(`/mypage/profile-img`, formData)
         .then(response => {
           setUserPhoto(URL.createObjectURL(selectedFile));
           login(response.data);
