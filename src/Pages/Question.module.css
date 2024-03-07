@@ -64,13 +64,21 @@
   color: white;
 }
 
+.resetBtn {
+  border: none;
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: var(--main-color);
+}
+
 .Question button:hover {
   background-color: var(--mainDark-color);
 }
 
 .Question button:disabled {
   background-color: var(--darkGray-color);
-  cursor: unset;
 }
 
 .tableContainer {
