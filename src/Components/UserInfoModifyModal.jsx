@@ -66,6 +66,7 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
         .then(response => {
           setUserPhoto(URL.createObjectURL(selectedFile));
           login(response.data);
+          localStorage.setItem('Authorization', response.headers.authorization);
           alert('프로필 이미지가 업데이트되었습니다.');
         })
         .catch(error => {
