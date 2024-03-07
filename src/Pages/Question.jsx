@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useAsyncError, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './Question.module.css';
 import Nav from '../Components/Nav';
 
 import { useAuth } from '../api/AuthContext';
 import QuestionContainer from '../Components/QuestionContainer';
-
 import instance from '../api/CustomAxios';
-import axios from 'axios';
 
 const Question = () => {
   const axiosInstance = instance();
   const navigate = useNavigate();
 
-  const { isLoggedIn, userData } = useAuth();
+  const { isLoggedIn } = useAuth();
 
   /* IDE로 이동하는 함수 */
   const goToEditor = questionId => {
@@ -39,107 +37,136 @@ const Question = () => {
     }
   };
 
-  /* 레벨 선택 상태 */
-  const [selectedLevel, setSelectedLevel] = useState('all');
-
-  /* 레벨 선택 이벤트 핸들러 */
-  const handleLevelChange = event => {
-    setSelectedLevel(event.target.value);
-    setIdx(1);
-  };
-
-  /* 레벨 선택 옵션 */
-  const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
-  const [questionData, setQuestionData] = useState([]);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [idx, setIdx] = useState(0);
   const itemPerPage = 5;
-  const [pageButton, setPageButton] = useState('next');
+  const [idx, setIdx] = useState(0);
   const [data, setData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [questionData, setQuestionData] = useState([]);
+  const [pageButton, setPageButton] = useState('next');
   const [isPrevDisabled, setIsPrevDisabled] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
 
-  useEffect(() => {
+  const [search, setSearch] = useState(false);
+  const [query, setQuery] = useState('');
+
+  /* 레벨 선택 상태 */
+  const [selectedLevel, setSelectedLevel] = useState('all');
+  const levelOptions = ['all', 'Lv.0', 'Lv.1', 'Lv.2'];
+
+  /* 레벨 변경 */
+  const handleLevelChange = event => {
+    setSelectedLevel(event.target.value);
+
+    /* 레벨 변경 시 파라미터 및 페이지 번호 초기화 */
+    setCurrentPage(1);
+    setPageButton('next');
+    setIdx(0);
+    setQuery('');
+  };
+
+  /* 검색어 입력 */
+  const handleQuery = e => {
+    setQuery(e.target.value);
+  };
+
+  const handleSearch = () => {
+    setPageButton('next');
+    setCurrentPage(1);
+    setIdx(0);
+
     let levelParam = parseInt(selectedLevel.slice(3));
+
     if (selectedLevel === 'all') {
       levelParam = -1;
     }
-
-    if (pageButton === 'next' || pageButton === 'previous') {
-      axios
-        .get(
-          `http://localhost:8081/question?button=${pageButton}&level=${levelParam}&index=${idx}&size=${itemPerPage}`
-        )
-        .then(response => {
-          setQuestionData(response.data);
-          setData(response.data);
-
-          if (currentPage === 1) {
-            setIsPrevDisabled(true);
-          } else if (response.data.length < 5) {
-            setIsNextDisabled(true);
-          } else {
-            setIsNextDisabled(false);
-            setIsPrevDisabled(false);
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  }, [currentPage, selectedLevel, pageButton, setIdx]);
-
-  const handleNextPage = () => {
-    setPageButton('next');
-    setCurrentPage(prevPage => prevPage + 1);
-
-    const first = data[data.length - 1];
-    setIdx(first.id);
+    setSearch(true);
   };
 
+  /* 다음 페이지 버튼 */
+  const handleNextPage = () => {
+    if (currentPage >= 1) {
+      setPageButton('next');
+      setCurrentPage(prevPage => prevPage + 1);
+
+      const first = data[data.length - 1];
+      setIdx(first.id);
+    }
+  };
+
+  /* 이전 페이지 버튼 */
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(prevPage => prevPage - 1);
       setPageButton('previous');
 
       const last = data[0];
-      setIdx(last.id);
+
+      if (last) {
+        setIdx(last.id);
+      }
     }
   };
 
-  const [query, setQuery] = useState('');
-  const handlequery = e => {
-    setQuery(e.target.value);
-  };
+  /* 레벨 변경 || 첫 렌더링 시 요청 */
+  useEffect(() => {
+    let levelParam = parseInt(selectedLevel.slice(3));
 
-  const [search, setSearch] = useState(false);
-
-  const handleSearch = () => {
-    setSearch(true);
-  };
-
-  // 레벨 및 검색어를 고려한 필터링 함수
-  const filterQuestions = () => {
-    let filtered = questionData;
-
-    // 레벨 필터링
-    if (selectedLevel !== 'all') {
-      filtered = filtered.filter(
-        question =>
-          parseInt(question.level) === parseInt(selectedLevel.slice(3))
-      );
+    if (selectedLevel === 'all') {
+      levelParam = -1;
     }
 
-    // 검색어 필터링
-    if (query.trim() !== '' && search) {
-      filtered = filtered.filter(question => question.title.includes(query));
-    }
-    return filtered;
-  };
+    let url = `/question?button=${pageButton}&level=${levelParam}&index=${idx}&size=${itemPerPage}`;
 
-  // 현재 필터된 문제 목록
-  const filteredQuests = filterQuestions();
+    if (query.trim() !== '') {
+      url = `/question?button=${pageButton}&level=${levelParam}&index=${idx}&size=${itemPerPage}&filter=${query}`;
+    }
+
+    axiosInstance
+      .get(url)
+      .then(response => {
+        if (currentPage !== 1 && response.data.length === 0) {
+          setIsPrevDisabled(false);
+          setIsNextDisabled(true);
+        } else if (
+          pageButton === 'previous' &&
+          currentPage === 1 &&
+          response.data.length < 5
+        ) {
+          setIsPrevDisabled(true);
+          setIsNextDisabled(false);
+        } else if (response.data.length === 0) {
+          setIsNextDisabled(true);
+          setIsPrevDisabled(true);
+        } else if (currentPage === 1 && response.data.length < 5) {
+          setIsPrevDisabled(true);
+          setIsNextDisabled(true);
+        } else if (response.data.length < 5) {
+          setIsPrevDisabled(false);
+          setIsNextDisabled(true);
+        } else if (currentPage === 1) {
+          setIsPrevDisabled(true);
+          setIsNextDisabled(false);
+        } else {
+          setIsPrevDisabled(false);
+          setIsNextDisabled(false);
+        }
+        setData(response.data);
+        setQuestionData(response.data);
+        setSearch(false);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }, [selectedLevel, pageButton, currentPage, idx, search]);
+
+  /* 초기화 */
+  const searchReset = () => {
+    setCurrentPage(1);
+    setIdx(0);
+    setSelectedLevel('all');
+    setPageButton('next');
+    setQuery('');
+  };
 
   return (
     <div className={styles.QuestionWrapper}>
@@ -148,8 +175,8 @@ const Question = () => {
         <div className={styles.findingQuestion}>
           <select
             className={styles.selectingLevel}
-            onChange={handleLevelChange}
             value={selectedLevel}
+            onChange={handleLevelChange}
           >
             {levelOptions.map((option, index) => (
               <option key={index} value={option}>
@@ -160,7 +187,8 @@ const Question = () => {
           <input
             className={styles.searchingTitle}
             placeholder="문제 제목을 검색하세요."
-            onChange={handlequery}
+            onChange={handleQuery}
+            value={query}
             onKeyUp={e => {
               if (e.key === 'Enter') {
                 handleSearch();
@@ -173,10 +201,13 @@ const Question = () => {
         </div>
         {
           <QuestionContainer
-            currentQuest={filteredQuests}
+            currentQuest={questionData}
             goToEditor={goToEditor}
           />
         }
+        <button className={styles.resetBtn} onClick={searchReset}>
+          검색 초기화
+        </button>
         <div className={styles.pageBtns}>
           <button onClick={handlePrevPage} disabled={isPrevDisabled}>
             ◀️
