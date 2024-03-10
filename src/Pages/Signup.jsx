@@ -27,7 +27,7 @@ const Signup = () => {
     if (email) {
       try {
         const response = await axiosInstance.post(
-          `/api/members/signup/email-check`,
+          `/members/signup/email-check`,
           { email }
         );
 
@@ -52,7 +52,7 @@ const Signup = () => {
       };
 
       axiosInstance
-        .post(`/api/members/signup`, Data)
+        .post(`/members/signup`, Data)
         .then(response => {
           alert('회원가입이 완료되었습니다.');
           navigate('/login');

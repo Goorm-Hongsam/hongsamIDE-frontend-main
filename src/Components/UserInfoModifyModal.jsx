@@ -29,7 +29,7 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
     const passwordToSend = password || null;
 
     axiosInstance
-      .put(`/api/mypage/info`, {
+      .put(`/mypage/info`, {
         username: usernameToSend,
         password: passwordToSend,
       })
@@ -62,10 +62,11 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
       formData.append('profileImg', selectedFile);
 
       axiosInstance
-        .post(`/api/mypage/profile-img`, formData)
+        .post(`/mypage/profile-img`, formData)
         .then(response => {
           setUserPhoto(URL.createObjectURL(selectedFile));
           login(response.data);
+          localStorage.setItem('Authorization', response.headers.authorization);
           alert('프로필 이미지가 업데이트되었습니다.');
         })
         .catch(error => {

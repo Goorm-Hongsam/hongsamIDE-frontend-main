@@ -45,7 +45,7 @@ const instance = () => {
             console.log('리프레시 토큰 갱신 오류:', refreshError);
             return Promise.reject(refreshError);
           });
-      } else if (error.response && error.response.status === 206) {
+      } else if (error.response && error.response.status === 401) {
         // 토큰 만료 시 처리
         console.log('토큰이 만료되었습니다.');
         localStorage.removeItem('Authorization');
@@ -57,7 +57,7 @@ const instance = () => {
 
   function getNewToken() {
     return axiosInstance
-      .post(`/api/members/login-check`, { withCredentials: true })
+      .post(`/login-check`, { withCredentials: true })
       .then(response => {
         if (response.status === 200) {
           localStorage.setItem('Authorization', response.headers.authorization);

@@ -13,7 +13,7 @@ const Nav = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axiosInstance.post(`/api/members/login-check`);
+        const response = await axiosInstance.post(`/login-check`);
         login(response.data);
       } catch (error) {
         console.error('유저 정보를 불러오는 중 에러 발생:', error);
@@ -44,7 +44,7 @@ const Nav = () => {
 
   const goToLogout = () => {
     axiosInstance
-      .post(`/api/members/logout`, {})
+      .post(`/members/logout`, {})
       .then(response => {
         logout();
         alert('로그아웃 되었습니다.');
