@@ -1,53 +1,40 @@
-name: hongsamIDE-front-main
+name: hongsamIDE-front-main to ECR
 
 on:
   push:
-    branches: [ "main" ]
-  # pull_request:
-  #   branches: [ "main" ]
+    branches: [ "main2" ]
+
+env:
+  AWS_REGION: ap-northeast-2      
+  ECR_REPOSITORY: front-main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Use Node.js 18.18.2
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.18.2'
-        cache: 'yarn'
-
-    - name: Install dependencies
-      run: yarn install
-
-    - name: Build
-      run: yarn build
-      
-    - name: Upload dist artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: hongsamIDE-front-main
-        path: dist/
-
- # 배포 
   deploy:
-    needs: build
+    name: Deploy
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
-    - name: Download dist artifact
-      uses: actions/download-artifact@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
-        name: hongsamIDE-front-main
-        path: dist/
-        
-    - name: Deploy to EC2
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}         
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
       run: |
-        echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
-        chmod 600 private_key.pem
-        scp -r -i private_key.pem -o StrictHostKeyChecking=no dist ${{ secrets.EC2_HOST }}@${{ secrets.EC2_IP }}:/home/${{ secrets.EC2_HOST }}/FE-cicdTest
-        script: | # 실행할 스크립트
-            sudo systemctl restart nginx
-        rm -f private_key.pem
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
