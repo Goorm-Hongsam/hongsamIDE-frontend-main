@@ -45,7 +45,7 @@ const instance = () => {
             console.log('리프레시 토큰 갱신 오류:', refreshError);
             return Promise.reject(refreshError);
           });
-      } else if (error.response && error.response.status === 206) {
+      } else if (error.response && error.response.status === 401) {
         // 토큰 만료 시 처리
         console.log('토큰이 만료되었습니다.');
         localStorage.removeItem('Authorization');
