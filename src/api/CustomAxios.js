@@ -11,7 +11,7 @@ const instance = () => {
     config => {
       const JWTtoken = localStorage.getItem('Authorization');
       if (JWTtoken) {
-        config.headers.Authorization = `${JWTtoken}`;
+        config.headers.Authorization = `Bearer ${JWTtoken}`;
       }
       return config;
     },
@@ -34,8 +34,8 @@ const instance = () => {
           .then(newToken => {
             isRetrying = false;
 
-            axiosInstance.defaults.headers.common.Authorization = `${newToken}`;
-            originalRequest.headers.Authorization = `${newToken}`;
+            axiosInstance.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
 
             return axiosInstance(originalRequest);
           })
@@ -69,7 +69,7 @@ const instance = () => {
         }
       })
       .catch(error => {
-        alert('로그인을 다시 해주세요.');
+        console.log('getNewToken 에러. 로그인을 다시 해주세요.');
         return Promise.reject(error);
       });
   }
