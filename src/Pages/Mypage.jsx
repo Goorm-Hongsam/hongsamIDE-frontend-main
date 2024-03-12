@@ -15,7 +15,7 @@ const Mypage = () => {
   const { userData, login, logout } = useAuth();
 
   useEffect(() => {
-    if (!login) {
+    if (!userData) {
       navigate('/');
     }
   }, []);
@@ -25,9 +25,7 @@ const Mypage = () => {
       try {
         const response = await axiosInstance.post(`/login-check`);
         login(response.data);
-      } catch (error) {
-        console.error('Mypage에서 발생하는 에러:', error);
-      }
+      } catch (error) {}
     };
 
     fetchUserData();
@@ -57,6 +55,7 @@ const Mypage = () => {
         .then(response => {
           alert('탈퇴 되었습니다 😭');
           localStorage.removeItem('Authorization');
+          logout();
           navigate('/', { replace: true });
         })
         .catch(error => {

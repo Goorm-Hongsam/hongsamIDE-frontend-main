@@ -15,9 +15,7 @@ const Nav = () => {
       try {
         const response = await axiosInstance.post(`/login-check`);
         login(response.data);
-      } catch (error) {
-        console.error('Nav에서 발생하는 에러:', error);
-      }
+      } catch (error) {}
     };
 
     if (!userData) {
@@ -51,7 +49,6 @@ const Nav = () => {
         navigate('/');
       })
       .catch(error => {
-        console.log(error);
         if (error.response && error.response.status === 406) {
           alert('로그아웃 되었습니다.');
           // 토큰이 유효하지 않음을 서버에서 알려줄 때
@@ -60,7 +57,6 @@ const Nav = () => {
           // localStorage.removeItem('Authorization');
         } else {
           // 다른 에러 처리
-          console.log(error);
         }
       });
   };

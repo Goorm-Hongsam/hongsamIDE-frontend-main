@@ -46,7 +46,6 @@ const instance = () => {
           });
       } else if (error.response && error.response.status === 406) {
         // 토큰 만료 시 처리
-        console.log('토큰이 만료되었습니다.');
         localStorage.removeItem('Authorization');
         return Promise.reject(error);
       }
