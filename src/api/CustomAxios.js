@@ -5,7 +5,8 @@ const instance = () => {
     baseURL: import.meta.env.VITE_SERVER_URL,
   });
 
-  // 요청 전에 헤더에 JWT 토큰을 추가하는 인터셉터
+  let isRetrying = false;
+
   axiosInstance.interceptors.request.use(
     config => {
       const JWTtoken = localStorage.getItem('Authorization');
@@ -19,20 +20,29 @@ const instance = () => {
     }
   );
 
-  // 응답에 대한 인터셉터
   axiosInstance.interceptors.response.use(
     response => {
-      localStorage.setItem('Authorization', response.headers.authorization);
       return response;
     },
     error => {
       const originalRequest = error.config;
 
-      // 토큰 만료 시 401 에러 발생 시 재시도하는 부분
       if (error.response && error.response.status === 401 && !isRetrying) {
         isRetrying = true;
 
-        return Promise.reject(error);
+        return getNewToken()
+          .then(newToken => {
+            isRetrying = false;
+
+            axiosInstance.defaults.headers.common.Authorization = `${newToken}`;
+            originalRequest.headers.Authorization = `${newToken}`;
+            return axiosInstance(originalRequest);
+          })
+          .catch(refreshError => {
+            isRetrying = false;
+            localStorage.removeItem('Authorization');
+            return Promise.reject(refreshError);
+          });
       } else if (error.response && error.response.status === 406) {
         // 토큰 만료 시 처리
         localStorage.removeItem('Authorization');
@@ -42,6 +52,25 @@ const instance = () => {
     }
   );
 
+  function getNewToken() {
+    return axiosInstance
+      .post(`/login-check`, { withCredentials: true })
+      .then(response => {
+        if (response.status === 200) {
+          localStorage.setItem('Authorization', response.headers.authorization);
+          console.log(localStorage.getItem('Authorization'));
+          return response.data;
+        } else {
+          console.log('엑세스 토큰 갱신에 실패했습니다.');
+          localStorage.removeItem('Authorization');
+          return Promise.reject('엑세스 토큰 갱신 실패');
+        }
+      })
+      .catch(error => {
+        alert('로그인을 다시 해주세요.');
+        return Promise.reject(error);
+      });
+  }
   return axiosInstance;
 };
 
