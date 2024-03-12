@@ -20,6 +20,9 @@ const instance = () => {
 
   axiosInstance.interceptors.response.use(
     response => {
+      const JWTtoken = response.headers.Authorization;
+      localStorage.setItem('Authorization', JWTtoken);
+
       return response;
     },
     error => {
