@@ -3,6 +3,7 @@ import axios from 'axios';
 const instance = () => {
   const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_SERVER_URL,
+    withCredentials: true,
   });
 
   let isRetrying = false;
@@ -10,6 +11,7 @@ const instance = () => {
   axiosInstance.interceptors.request.use(
     config => {
       const JWTtoken = localStorage.getItem('Authorization');
+      console.log(JWTtoken);
       if (JWTtoken) {
         config.headers.Authorization = `${JWTtoken}`;
       }
@@ -51,6 +53,8 @@ const instance = () => {
       return Promise.reject(error);
     }
   );
+
+  console.log(localStorage.getItem('Authorization'));
 
   function getNewToken() {
     return axiosInstance
