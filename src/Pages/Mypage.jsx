@@ -57,7 +57,7 @@ const Mypage = () => {
         .then(response => {
           alert('탈퇴 되었습니다 😭');
           localStorage.removeItem('Authorization');
-          window.location.reload();
+          navigate('/', { replace: true });
         })
         .catch(error => {
           alert('비정상적인 접근입니다.');
