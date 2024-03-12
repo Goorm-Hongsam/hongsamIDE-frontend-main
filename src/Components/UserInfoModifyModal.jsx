@@ -39,16 +39,16 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
           setIsModifiedModalOpen(false);
           login(response.data);
           localStorage.setItem('Authorization', response.headers.authorization);
-        } else if (response.status === 402) {
-          alert('기존 비밀번호와 동일합니다.');
-          setFocus('password');
-        } else if (response.status === 403) {
-          alert('기존 이름과 동일합니다.');
-          setFocus('username');
         }
       })
       .catch(error => {
-        console.error(error);
+        if (error && error.response.status === 403) {
+          alert('기존 이름과 동일합니다.');
+          setFocus('username');
+        } else if (error && error.response.status === 402) {
+          alert('기존 비밀번호와 동일합니다.');
+          setFocus('password');
+        }
       });
   };
 
@@ -135,7 +135,7 @@ const UserInfoModifyModal = ({ setIsModifiedModalOpen }) => {
               })}
             />
             {errors.password && errors.password.type === 'pattern' && (
-              <p>영문+숫자+특수문자 조합의 7~15자로 입력하세요.</p>
+              <p>영문+숫자+특수문자 조합의 7~15자</p>
             )}
           </label>
 
