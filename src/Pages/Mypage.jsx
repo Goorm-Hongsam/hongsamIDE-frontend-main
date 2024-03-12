@@ -15,17 +15,13 @@ const Mypage = () => {
   const { userData, login, logout } = useAuth();
 
   useEffect(() => {
-    if (!userData) {
-      navigate('/');
-    }
-  }, []);
-
-  useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await axiosInstance.post(`/login-check`);
         login(response.data);
-      } catch (error) {}
+      } catch (error) {
+        navigate('/');
+      }
     };
 
     fetchUserData();
