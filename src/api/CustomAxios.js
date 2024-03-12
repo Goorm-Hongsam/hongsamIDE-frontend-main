@@ -18,6 +18,8 @@ const instance = () => {
     }
   );
 
+  console.log(JWTtoken);
+
   axiosInstance.interceptors.response.use(
     response => {
       const JWTtoken = response.headers.Authorization;
