@@ -41,12 +41,12 @@ const instance = () => {
           })
           .catch(refreshError => {
             isRetrying = false;
-            localStorage.removeItem('Authorization');
+            // localStorage.removeItem('Authorization');
             return Promise.reject(refreshError);
           });
       } else if (error.response && error.response.status === 406) {
         // 토큰 만료 시 처리
-        localStorage.removeItem('Authorization');
+        // localStorage.removeItem('Authorization');
         return Promise.reject(error);
       }
       return Promise.reject(error);
