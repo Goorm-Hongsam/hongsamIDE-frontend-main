@@ -11,7 +11,7 @@ const instance = () => {
     config => {
       const JWTtoken = localStorage.getItem('Authorization');
       if (JWTtoken) {
-        config.headers.Authorization = `Bearer ${JWTtoken}`;
+        config.headers.Authorization = `${JWTtoken}`;
       }
       return config;
     },
@@ -34,18 +34,17 @@ const instance = () => {
           .then(newToken => {
             isRetrying = false;
 
-            axiosInstance.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            axiosInstance.defaults.headers.common.Authorization = `${newToken}`;
+            originalRequest.headers.Authorization = `${newToken}`;
 
             return axiosInstance(originalRequest);
           })
           .catch(refreshError => {
             isRetrying = false;
             localStorage.removeItem('Authorization');
-            console.log('리프레시 토큰 갱신 오류:', refreshError);
             return Promise.reject(refreshError);
           });
-      } else if (error.response && error.response.status === 401) {
+      } else if (error.response && error.response.status === 406) {
         // 토큰 만료 시 처리
         console.log('토큰이 만료되었습니다.');
         localStorage.removeItem('Authorization');
@@ -69,7 +68,7 @@ const instance = () => {
         }
       })
       .catch(error => {
-        console.log('getNewToken 에러. 로그인을 다시 해주세요.');
+        alert('로그인을 다시 해주세요.');
         return Promise.reject(error);
       });
   }

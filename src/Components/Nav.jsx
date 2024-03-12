@@ -16,14 +16,14 @@ const Nav = () => {
         const response = await axiosInstance.post(`/login-check`);
         login(response.data);
       } catch (error) {
-        console.error('유저 정보를 불러오는 중 에러 발생:', error);
+        console.error('Nav에서 발생하는 에러:', error);
       }
     };
 
     if (!userData) {
       fetchUserData();
     }
-  }, [userData]);
+  }, []);
 
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -57,7 +57,7 @@ const Nav = () => {
           // 토큰이 유효하지 않음을 서버에서 알려줄 때
           logout(); // 로그아웃 수행
           navigate('/');
-          localStorage.removeItem('Authorization');
+          // localStorage.removeItem('Authorization');
         } else {
           // 다른 에러 처리
           console.log(error);

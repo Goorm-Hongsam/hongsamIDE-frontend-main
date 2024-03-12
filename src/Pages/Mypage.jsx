@@ -15,7 +15,7 @@ const Mypage = () => {
   const { userData, login, logout } = useAuth();
 
   useEffect(() => {
-    if (!userData) {
+    if (!login) {
       navigate('/');
     }
   }, []);
@@ -26,7 +26,7 @@ const Mypage = () => {
         const response = await axiosInstance.post(`/login-check`);
         login(response.data);
       } catch (error) {
-        console.error('유저 정보를 불러오는 중 에러 발생:', error);
+        console.error('Mypage에서 발생하는 에러:', error);
       }
     };
 
