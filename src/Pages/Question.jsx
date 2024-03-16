@@ -6,6 +6,7 @@ import Nav from '../Components/Nav';
 import { useAuth } from '../api/AuthContext';
 import QuestionContainer from '../Components/QuestionContainer';
 import instance from '../api/CustomAxios';
+import { getCookie, setCookie } from '../api/Cookie';
 
 const Question = () => {
   const axiosInstance = instance();
@@ -24,6 +25,10 @@ const Question = () => {
         .then(response => {
           if (response.data.status === 200) {
             const uuid = response.data.data;
+            setCookie('Authorization', localStorage.getItem('Authorization'), {
+              path: '/',
+            });
+            console.log(getCookie('Authorization'));
             window.location.href = `https://ide.hong-sam.online/${uuid}/q${questionId}`;
           }
         })

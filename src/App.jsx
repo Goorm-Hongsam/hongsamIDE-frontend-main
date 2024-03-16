@@ -9,6 +9,7 @@ import { AuthProvider } from './api/AuthContext';
 import DarkModeToggle from './Components/DarkModeToggle';
 import Chat from './Pages/Chat';
 import Mypage from './Pages/Mypage';
+import { CookiesProvider } from 'react-cookie';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -49,21 +50,23 @@ function App() {
   }, [isDarkMode]); // isDarkMode가 변경될 때만 실행
 
   return (
-    <BrowserRouter>
-      <div className="App">
-        <AuthProvider>
-          <DarkModeToggle setIsDarkMode={setIsDarkMode} />
-          <Routes>
-            <Route path="/" element={<Main />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/question" element={<Question />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/mypage" element={<Mypage />} />
-          </Routes>
-        </AuthProvider>
-      </div>
-    </BrowserRouter>
+    <CookiesProvider>
+      <BrowserRouter>
+        <div className="App">
+          <AuthProvider>
+            <DarkModeToggle setIsDarkMode={setIsDarkMode} />
+            <Routes>
+              <Route path="/" element={<Main />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/question" element={<Question />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/mypage" element={<Mypage />} />
+            </Routes>
+          </AuthProvider>
+        </div>
+      </BrowserRouter>
+    </CookiesProvider>
   );
 }
 

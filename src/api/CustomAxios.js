@@ -11,7 +11,6 @@ const instance = () => {
   axiosInstance.interceptors.request.use(
     config => {
       const JWTtoken = localStorage.getItem('Authorization');
-      console.log(JWTtoken);
       if (JWTtoken) {
         config.headers.Authorization = `${JWTtoken}`;
       }
@@ -54,15 +53,12 @@ const instance = () => {
     }
   );
 
-  console.log(localStorage.getItem('Authorization'));
-
   function getNewToken() {
     return axiosInstance
       .post(`/login-check`, { withCredentials: true })
       .then(response => {
         if (response.status === 200) {
           localStorage.setItem('Authorization', response.headers.authorization);
-          console.log(localStorage.getItem('Authorization'));
           return response.data;
         } else {
           console.log('엑세스 토큰 갱신에 실패했습니다.');
